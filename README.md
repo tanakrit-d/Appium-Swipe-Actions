@@ -1,13 +1,21 @@
 # Enhanced Mobile Scroll Library
  
-## Work in Progress
+## Currently a Work in Progress
+The goal of this library is to provide more robust and useful scrolling functionality for Appium mobile automation.  
+Using percentages of the viewport and element locations, we can avoid the standard approach of specifiying co-ordinates for each swipe/scroll action.  
+It currently only targets use with Android, and has not be tested against iOS.
 
-The goal of this library is to provide more robust and useful scrolling functionality for Appium mobile automation.
+## To-Do
+- Write tests (lol)
+- Publish as a library
 
-We achieve this by dividing the viewport/screen into 'scrollable' regions, and then performing w3c actions within this space.
-Using percentages of the viewport and element locations, we can avoid the standard approach of specifiying co-ordinates for each swipe/or scroll action.
+## Defining a Scrollable Region
+This library divides the viewport into four bounds: upper, lower, left, and right. The default values can be overwritten.  
+Within these bounds, we then define a 'scrollable region'. Within these parameters we can then perform our scroll actions.  
+The impetus for this, is to recreate scrolling/swiping behaviour more similar to a user. Additionally, it avoids the automation attempting to perform actions on top of elements (such as headers or footers).  
+![Viewport Diagram](resources/viewport_scrollable_bounds.png)
 
-## Code Example
+## Code Snippet
 ```python
 def swipe_element_into_view(self, locator_method: AppiumBy, locator_value: str):
     action = ActionChains(self.driver)
@@ -35,12 +43,8 @@ def swipe_element_into_view(self, locator_method: AppiumBy, locator_value: str):
                     self.perform_navigation_partial_y(action, self.lower_bound, self.upper_bound)
 ```
 
-## To-Do
-- Write tests (lol)
-- Publish as a library
-
 ## Understanding Element Location
-Elements have two attributes: Position and Size.  
+Elements have two attributes: position and size.  
 The position within the viewport is the top-left-point.
 
 We can then use the element size to determine where it occupies relative to the view-port position.
