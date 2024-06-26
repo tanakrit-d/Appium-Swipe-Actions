@@ -50,8 +50,8 @@ class EnhancedScroll(object):
         self.driver = driver
 
         # Set viewport dimensions
-        self.view_port_width, self.view_port_height = self.retrieve_viewport_dimensions
-        self.view_port_x_mid_point, self.view_port_y_mid_point = self.view_port_width // 2, self.view_port_height // 2
+        self.viewport_width, self.viewport_height = self.retrieve_viewport_dimensions
+        self.viewport_x_mid_point, self.viewport_y_mid_point = self.viewport_width // 2, self.viewport_height // 2
         
         # Default crop factor percentage bounds of the viewport for the scrollable area
         self.upper_cf = kwargs.get('upper_cf', 0.05)  # 5% Removed from top of viewport
@@ -60,14 +60,14 @@ class EnhancedScroll(object):
         self.right_cf = kwargs.get('right_cf', 0.95)  # 5% Removed from right of viewport
         
         # Set scrolling boundries
-        self.upper_bound = self.view_port_height * self.upper_cf
-        self.lower_bound = self.view_port_height * self.lower_cf
-        self.left_bound = self.view_port_width * self.left_cf
-        self.right_bound = self.view_port_width * self.right_cf
+        self.upper_bound = self.viewport_height * self.upper_cf
+        self.lower_bound = self.viewport_height * self.lower_cf
+        self.left_bound = self.viewport_width * self.left_cf
+        self.right_bound = self.viewport_width * self.right_cf
 
         # Set scrollable area
-        self.scrollable_x = (self.view_port_height - self.upper_bound) - (self.view_port_height - self.lower_bound)
-        self.scrollable_y = (self.view_port_width - self.left_bound) - (self.view_port_width - self.right_bound)
+        self.scrollable_x = (self.viewport_height - self.upper_bound) - (self.viewport_height - self.lower_bound)
+        self.scrollable_y = (self.viewport_width - self.left_bound) - (self.viewport_width - self.right_bound)
 
 
     def swipe_up(self):
@@ -76,7 +76,7 @@ class EnhancedScroll(object):
         """
         action = ActionChains(self.driver)
         action.w3c_actions = ActionBuilder(self.driver, mouse=PointerInput(Interaction.POINTER_TOUCHER, "touch"))
-        self.perform_navigation_full(action, self.lower_bound, self.upper_bound)
+        self.perform_navigation_full_y(action, self.lower_bound, self.upper_bound)
 
 
     def swipe_down(self):
@@ -85,17 +85,45 @@ class EnhancedScroll(object):
         """
         action = ActionChains(self.driver)
         action.w3c_actions = ActionBuilder(self.driver, mouse=PointerInput(Interaction.POINTER_TOUCHER, "touch"))
-        self.perform_navigation_full(action, self.upper_bound, self.lower_bound)
+        self.perform_navigation_full_y(action, self.upper_bound, self.lower_bound)
+
+
+    def swipe_left(self):
+        """
+        Performs a full leftward swipe of the calculated viewport.
+        """
+        action = ActionChains(self.driver)
+        action.w3c_actions = ActionBuilder(self.driver, mouse=PointerInput(Interaction.POINTER_TOUCHER, "touch"))
+        self.perform_navigation_full_x(action, self.right_bound, self.left_bound)
+
+
+    def swipe_right(self):
+        """
+        Performs a full rightward swipe of the calculated viewport.
+        """
+        action = ActionChains(self.driver)
+        action.w3c_actions = ActionBuilder(self.driver, mouse=PointerInput(Interaction.POINTER_TOUCHER, "touch"))
+        self.perform_navigation_full_x(action, self.left_bound, self.right_bound)
 
 
     def swipe_on_element(self, locator_method: AppiumBy, locator_value: str, direction: Direction):
         """
-        DocString
+        Swipe on an element. The primary use case is interacting with a scrollview or carrousel.
+        This function calculates the respective mid-points of an element and their location relative to the viewport co-ordinates.
+        It then performs a complete ActionChain (swipe/scroll action) for the given direction.
 
+        Explanation:
+            - See the provided diagram `./resources/understanding_element_position-dimension.png
+
+        Parameters:
+            `locator_method`: AppiumBy locator (e.g. AppiumBy.XPATH, AppiumBy.ACCESSIBILITY_ID)
+            `locator_value`: XPath or Attribute to match (e.g. `//ion-nav-view/ion-item[1]` or `android.widget.TextView`)
+            `direction`: Direction for the action (e.g. a LEFT swipe starts from the right and finishes left)
+        
         Example Usage:
-        ```
-        gestures.swipe_on_element(AppiumBy.XPATH, '//button[@name='submit']', Direction.RIGHT)
-        ```
+            ```
+            gestures.swipe_on_element(AppiumBy.XPATH, '//android.widget.ScrollView', Direction.RIGHT)
+            ```
 
         To-do: Refactor the element calculations into a standalone function (return a dict maybe)
         """
@@ -129,7 +157,7 @@ class EnhancedScroll(object):
                 self.perform_navigation_on_element(action, element_left_mid_point, element_right_mid_point)
 
 
-    def swipe_element_into_view(self, locator_method: AppiumBy, locator_value: str):
+    def swipe_element_into_view(self, locator_method: AppiumBy, locator_value: str, direction: Direction):
         """"
         Swipe an element into view. If the element is already in view, it will attempt to bring it to the top.
         This function calculates the distance from the upper bound to the element, and then determines the number of swipes required to bring the element into view.
@@ -148,7 +176,8 @@ class EnhancedScroll(object):
 
         Parameters:
             `locator_method`: AppiumBy locator (e.g. AppiumBy.XPATH, AppiumBy.ACCESSIBILITY_ID)
-            `locator_value`: XPath or Attribute to match (e.g. `//ion-nav-view/ion-item[1]` or `android.widget.TextView`).
+            `locator_value`: XPath or Attribute to match (e.g. `//ion-nav-view/ion-item[1]` or `android.widget.TextView`)
+            `direction`: Direction for the action (e.g. a LEFT swipe starts from the right and finishes left)
 
         Example Usage:
             ```
@@ -159,95 +188,98 @@ class EnhancedScroll(object):
         action = ActionChains(self.driver)
         action.w3c_actions = ActionBuilder(self.driver, mouse=PointerInput(Interaction.POINTER_TOUCHER, "touch"))
         element_x, element_y = self.retrieve_element_location(locator_method, locator_value)
-        direction_x, direction_y = self.retrieve_relative_direction(element_x, element_y)
 
-        if direction_y in [Direction.UP, Direction.DOWN]:
+        if direction in [Direction.UP, Direction.DOWN]:
             distance_to_element = element_y - self.lower_bound
             actions_total = distance_to_element / self.scrollable_x
             actions_complete = distance_to_element // self.scrollable_x
             actions_partial = self.scrollable_x * (actions_total - int(actions_total))
             actions_complete = int(actions_complete)
-
-            if direction_y == Direction.DOWN:
-                if actions_total > 1:
-                    self.perform_navigation_full(action, self.lower_bound, self.upper_bound, actions_complete)
-                if actions_partial > 50:
-                    self.perform_navigation_partial(action, self.lower_bound, self.upper_bound)
             
-            if direction_y == Direction.UP:
-                if actions_total > 1:
-                    self.perform_navigation_full(action, self.upper_bound, self.lower_bound, actions_complete)
-                if actions_partial > 50:
-                    self.perform_navigation_partial(action, self.upper_bound, self.lower_bound)
-
-        # Need to adjust the approach for elements outside the viewport on the x-axis
-        # This is because an elements location (at least in Android) is the top-right point of the element
-        # Therefore it will always be treated as < of the x mid-point, even if the element is visually centered
-
-        x_scroll_flag = False
-
-        if x_scroll_flag:
-            if direction_x in [Direction.LEFT, Direction.RIGHT]:
-                distance_to_element = element_x - self.lower_bound
-                actions_total = distance_to_element / self.scrollable_y
-                actions_complete = distance_to_element // self.scrollable_y
-                actions_partial = self.scrollable_y * (actions_total - int(actions_total))
-                actions_complete = int(actions_complete)
-            
-            if actions_total > 1:
-                for i in range(actions_total):
-                    self.perform_navigation_full(action, self.lower_bound, self.upper_bound, actions_complete)
-            if actions_partial > 50:
-                self.perform_navigation_partial
-
-
-    def retrieve_relative_direction(self, element_x, element_y):
-        # Is element outside of viewport?
-        # outside_x = False
-        # outside_y = False
-        # element_relative_x = element_x - self.view_port_x_mid_point
-        # element_relative_y = element_y - self.view_port_y_mid_point
-
-        # if (element_relative_x  < 0 or
-        # element_relative_x > self.view_port_width):
-        #     outside_x = True
+            match direction:
+                case Direction.UP:
+                    if actions_total > 1:
+                        self.perform_navigation_full_y(action, self.upper_bound, self.lower_bound, actions_complete)
+                    if actions_partial > 50:
+                        self.perform_navigation_partial_y(action, self.upper_bound, self.lower_bound)
+                case Direction.DOWN:
+                    if actions_total > 1:
+                        self.perform_navigation_full_y(action, self.lower_bound, self.upper_bound, actions_complete)
+                    if actions_partial > 50:
+                        self.perform_navigation_partial_y(action, self.lower_bound, self.upper_bound)
         
-        # if (element_relative_y  < 0 or
-        # element_relative_y > self.view_port_height):
-        #     outside_y = True       
+        
+        if direction in [Direction.LEFT, Direction.RIGHT]:
+            distance_to_element = element_x - self.lower_bound
+            actions_total = distance_to_element / self.scrollable_y
+            actions_complete = distance_to_element // self.scrollable_y
+            actions_partial = self.scrollable_y * (actions_total - int(actions_total))
+            actions_complete = int(actions_complete)
+            
+            match direction:
+                case Direction.LEFT:
+                    if actions_total > 1:
+                        self.perform_navigation_full_x(action, self.right_bound, self.left_bound, actions_complete)
+                    if actions_partial > 50:
+                        self.perform_navigation_partial_x(action, self.right_bound, self.left_bound)
+                case Direction.RIGHT:
+                    if actions_total > 1:
+                        self.perform_navigation_full_x(action, self.left_bound, self.right_bound, actions_complete)
+                    if actions_partial > 50:
+                        self.perform_navigation_partial_x(action, self.left_bound, self.right_bound)
 
-        if element_x < self.view_port_x_mid_point:
-            direction_x = Direction.LEFT
-        if element_x > self.view_port_x_mid_point:
-            direction_x = Direction.RIGHT
-        if element_y < self.view_port_y_mid_point:
-            direction_y = Direction.UP
-        if element_y > self.view_port_y_mid_point:
-            direction_y = Direction.DOWN
-        return direction_x, direction_y
 
-
-    def perform_navigation_full(self, action: ActionChains, initial_bound: int, finish_bound: int, iterations: int = 1):
+    def perform_navigation_full_y(self, action: ActionChains, initial_bound: int, finish_bound: int, iterations: int = 1):
         """
-        Create and perform an action chain (swipe/scroll action) for a given number of iterations.
+        _y denotes the action direction occurs on the y-axis
+        Create and perform an ActionChain (swipe/scroll action) for a given number of iterations.
         Iterations corresponds to the number of complete actions required to bring the element within the viewport.
         """
         for i in range(iterations):
-            action.w3c_actions.pointer_action.move_to_location(self.view_port_x_mid_point, initial_bound)
+            action.w3c_actions.pointer_action.move_to_location(self.viewport_x_mid_point, initial_bound)
             action.w3c_actions.pointer_action.pointer_down()
-            action.w3c_actions.pointer_action.move_to_location(self.view_port_x_mid_point, finish_bound)
+            action.w3c_actions.pointer_action.move_to_location(self.viewport_x_mid_point, finish_bound)
             action.w3c_actions.pointer_action.pause(1)
             action.w3c_actions.pointer_action.release()
             action.perform()
 
 
-    def perform_navigation_partial(self, action: ActionChains, initial_bound: int, partial_perecentage: int):
+    def perform_navigation_partial_y(self, action: ActionChains, initial_bound: int, partial_perecentage: int):
         """
-        Create and perform an action chain (swipe/scroll action).
+        _y denotes the action direction occurs on the y-axis
+        Create and perform an ActionChain (swipe/scroll action).
         """
-        action.w3c_actions.pointer_action.move_to_location(self.view_port_mid_point, initial_bound)
+        action.w3c_actions.pointer_action.move_to_location(self.viewport_x_mid_point, initial_bound)
         action.w3c_actions.pointer_action.pointer_down()
-        action.w3c_actions.pointer_action.move_to_location(self.view_port_mid_point, initial_bound + partial_perecentage)
+        action.w3c_actions.pointer_action.move_to_location(self.viewport_x_mid_point, initial_bound + partial_perecentage)
+        action.w3c_actions.pointer_action.pause(1)
+        action.w3c_actions.pointer_action.release()
+        action.perform()
+
+
+    def perform_navigation_full_x(self, action: ActionChains, initial_bound: int, finish_bound: int, iterations: int = 1):
+        """
+        _x denotes the action direction occurs on the x-axis
+        Create and perform an ActionChain (swipe/scroll action) for a given number of iterations.
+        Iterations corresponds to the number of complete actions required to bring the element within the viewport.
+        """
+        for i in range(iterations):
+            action.w3c_actions.pointer_action.move_to_location(initial_bound, self.viewport_y_mid_point)
+            action.w3c_actions.pointer_action.pointer_down()
+            action.w3c_actions.pointer_action.move_to_location(finish_bound, self.viewport_y_mid_point)
+            action.w3c_actions.pointer_action.pause(1)
+            action.w3c_actions.pointer_action.release()
+            action.perform()
+
+
+    def perform_navigation_partial_x(self, action: ActionChains, initial_bound: int, partial_perecentage: int):
+        """
+        _x denotes the action direction occurs on the x-axis
+        Create and perform an ActionChain (swipe/scroll action).
+        """
+        action.w3c_actions.pointer_action.move_to_location(initial_bound, self.viewport_y_mid_point)
+        action.w3c_actions.pointer_action.pointer_down()
+        action.w3c_actions.pointer_action.move_to_location(initial_bound + partial_perecentage, self.viewport_y_mid_point)
         action.w3c_actions.pointer_action.pause(1)
         action.w3c_actions.pointer_action.release()
         action.perform()
@@ -274,6 +306,6 @@ class EnhancedScroll(object):
         """
         Calculates the viewport dimensions.
         """
-        view_port = self.driver.get_window_size()
-        return view_port["width"], view_port["height"]
+        viewport = self.driver.get_window_size()
+        return viewport["width"], viewport["height"]
     
