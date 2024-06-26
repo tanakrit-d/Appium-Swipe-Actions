@@ -15,18 +15,24 @@ def swipe_element_into_view(self, locator_method: AppiumBy, locator_value: str):
     element_x, element_y = self.retrieve_element_location(locator_method, locator_value)
     direction_x, direction_y = self.retrieve_relative_direction(element_x, element_y)
 
-    if direction_y in [Direction.UP, Direction.DOWN]:
+    if direction in [Direction.UP, Direction.DOWN]:
         distance_to_element = element_y - self.lower_bound
         actions_total = distance_to_element / self.scrollable_x
         actions_complete = distance_to_element // self.scrollable_x
         actions_partial = self.scrollable_x * (actions_total - int(actions_total))
         actions_complete = int(actions_complete)
-
-        if direction_y == Direction.DOWN:
-            if actions_total > 1:
-                self.perform_navigation_full(action, self.lower_bound, self.upper_bound, actions_complete)
-            if actions_partial > 50:
-                self.perform_navigation_partial(action, self.lower_bound, self.upper_bound)
+        
+        match direction:
+            case Direction.UP:
+                if actions_total > 1:
+                    self.perform_navigation_full_y(action, self.upper_bound, self.lower_bound, actions_complete)
+                if actions_partial > 50:
+                    self.perform_navigation_partial_y(action, self.upper_bound, self.lower_bound)
+            case Direction.DOWN:
+                if actions_total > 1:
+                    self.perform_navigation_full_y(action, self.lower_bound, self.upper_bound, actions_complete)
+                if actions_partial > 50:
+                    self.perform_navigation_partial_y(action, self.lower_bound, self.upper_bound)
 ```
 
 ## To-Do
