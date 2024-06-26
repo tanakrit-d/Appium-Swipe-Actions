@@ -2,7 +2,6 @@
  
 ## Currently a Work in Progress
 The goal of this library is to provide more robust and useful scrolling functionality for Appium mobile automation.  
-Using percentages of the viewport and element locations, we can avoid the standard approach of specifiying co-ordinates for each swipe/scroll action.  
 It currently only targets use with Android, and has not be tested against iOS.
 
 ## To-Do
@@ -11,8 +10,8 @@ It currently only targets use with Android, and has not be tested against iOS.
 
 ## Defining a Scrollable Region
 This library divides the viewport into four bounds: upper, lower, left, and right. The default values can be overwritten.  
-Within these bounds, we then define a 'scrollable region'. Within these parameters we can then perform our scroll actions.  
-The impetus for this, is to recreate scrolling/swiping behaviour more similar to a user. Additionally, it avoids the automation attempting to perform actions on top of elements (such as headers or footers).  
+Using these bounds, we then define a 'scrollable region'. We can then perform our scroll/swipe actions within this space.  
+The impetus for this, is to recreate scrolling/swiping behaviour more similar to a user and avoid hardcoding co-ordinates. Additionally, it avoids the automation attempting to perform actions on top of elements (such as headers or footers).  
 ![Viewport Diagram](resources/viewport_scrollable_bounds.png)
 
 ## Code Snippet
