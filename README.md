@@ -2,7 +2,7 @@
  
 ## Currently a Work in Progress
 The goal of this library is to provide more robust and useful scrolling functionality for Appium mobile automation.  
-It currently only targets use with Android, and has not be tested against iOS.
+It currently only targets use with Android, and has not been tested against iOS.
 
 ## To-Do
 - Write tests (lol)
@@ -11,7 +11,8 @@ It currently only targets use with Android, and has not be tested against iOS.
 ## Defining a Scrollable Region
 This library divides the viewport into four bounds: upper, lower, left, and right. The default values can be overwritten.  
 Using these bounds, we then define a 'scrollable region'. We can then perform our scroll/swipe actions within this space.  
-The impetus for this, is to recreate scrolling/swiping behaviour more similar to a user and avoid hardcoding co-ordinates. Additionally, it avoids the automation attempting to perform actions on top of elements (such as headers or footers).  
+The impetus for this is to recreate scrolling/swiping behaviour more similar to a user and avoid hardcoding co-ordinates.  
+Additionally, it avoids the automation attempting to perform actions on top of elements (such as headers or footers).  
 ![Viewport Diagram](resources/viewport_scrollable_bounds.png)
 
 ## Code Snippet
@@ -43,8 +44,8 @@ def swipe_element_into_view(self, locator_method: AppiumBy, locator_value: str):
 ```
 
 ## Understanding Element Location
-Elements have two attributes: position and size.  
-The position within the viewport is the top-left-point.
+For the purpose of this library, we are only concered with two attributes of an element: position and size.  
+The element's co-ordinates within the viewport is considered the top-left-point.
 
 We can then use the element size to determine where it occupies relative to the view-port position.
 ![Element Diagram](resources/understanding_element_position-dimension.png)
