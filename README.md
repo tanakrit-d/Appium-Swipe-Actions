@@ -36,8 +36,7 @@ def swipe_element_into_view(self, locator_method: AppiumBy, locator_value: str):
 ```
 
 ## To-Do
-- Complete all swipe actions
-- Write tests
+- Write tests (lol)
 - Publish as a library
 
 ## Understanding Element Location
