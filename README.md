@@ -7,33 +7,64 @@ The goal of this library is to provide more robust and useful scrolling function
 We achieve this by dividing the viewport/screen into 'scrollable' regions, and then performing w3c actions within this space.
 Using percentages of the viewport and element locations, we can avoid the standard approach of specifiying co-ordinates for each swipe/or scroll action.
 
-The current task is writing direction detection into the functionality. This will remove the use for specifying it manually via. parameter.
+## Code Example
+```python
+def swipe_element_into_view(self, locator_method: AppiumBy, locator_value: str):
+    action = ActionChains(self.driver)
+    action.w3c_actions = ActionBuilder(self.driver, mouse=PointerInput(Interaction.POINTER_TOUCHER, "touch"))
+    element_x, element_y = self.retrieve_element_location(locator_method, locator_value)
+    direction_x, direction_y = self.retrieve_relative_direction(element_x, element_y)
 
-Will eventually publish it as a library :^)
+    if direction_y in [Direction.UP, Direction.DOWN]:
+        distance_to_element = element_y - self.lower_bound
+        actions_total = distance_to_element / self.scrollable_x
+        actions_complete = distance_to_element // self.scrollable_x
+        actions_partial = self.scrollable_x * (actions_total - int(actions_total))
+        actions_complete = int(actions_complete)
 
-Approach sample:
+        if direction_y == Direction.DOWN:
+            if actions_total > 1:
+                self.perform_navigation_full(action, self.lower_bound, self.upper_bound, actions_complete)
+            if actions_partial > 50:
+                self.perform_navigation_partial(action, self.lower_bound, self.upper_bound)
 ```
-def __init__(self, driver, **kwargs):
-    super(EnhancedScroll, self).__init__()
-    self.driver = driver
 
-    # Set viewport dimensions
-    self.view_port_width, self.view_port_height = self.retrieve_viewport_dimensions
-    self.view_port_x_midpoint, self.view_port_y_midpoint = self.view_port_width // 2, self.view_port_height // 2
-    
-    # Default crop factor percentage bounds of the viewport for the scrollable area
-    self.upper_cf = kwargs.get('upper_cf', 0.05)  # 5% Removed from top of viewport
-    self.lower_cf = kwargs.get('lower_cf', 0.80)  # 20% Removed from bottom of viewport
-    self.left_cf = kwargs.get('left_cf', 0.05)    # 5% Removed from left of viewport
-    self.right_cf = kwargs.get('right_cf', 0.95)  # 5% Removed from right of viewport
-    
-    # Set scrolling boundries
-    self.upper_bound = self.view_port_height * self.upper_cf
-    self.lower_bound = self.view_port_height * self.lower_cf
-    self.left_bound = self.view_port_width * self.left_cf
-    self.right_bound = self.view_port_width * self.right_cf
+## To-Do
+- Complete all swipe actions
+- Write tests
+- Publish as a library
 
-    # Set scrollable area
-    self.scrollable_x = (self.view_port_height - self.upper_bound) - (self.view_port_height - self.lower_bound)
-    self.scrollable_y = (self.view_port_width - self.left_bound) - (self.view_port_width - self.right_bound)
+## Understanding Element Location
+Elements have two attributes: Position and Size.  
+The position within the viewport is the top-left-point.
+
+We can then use the element size to determine where it occupies relative to the view-port position.
+![Element Diagram](resources/understanding_element_position-dimension.png)
+
+```python
+element_top_left_point      = element.location["x"], element.location["y"]
+element_top_mid_point       = element.location["x"] + (element.size["width"] // 2), element.location["y"]
+element_top_right_point     = element.location["x"] + element.size["width"], element.location["y"]
+
+element_left_mid_point      = element.location["x"], element.location["y"] + (element.size["height"] // 2)
+element_mid_point           = element.location["x"] + (element.size["width"] // 2), element.location["y"] + (element.size["height"] // 2)
+element_right_mid_point     = element.location["x"] + element.size["width"], element.location["y"] + (element.size["height"] // 2)
+
+element_bottom_left_point   = element.location["x"], element.location["y"] + element.size["height"]
+element_bottom_mid_point    = element.location["x"] + (element.size["width"] // 2), element.location["y"] + element.size["height"]
+element_bottom_right_point  = element.location["x"] + element.size["width"], element.location["y"] + element.size["height"]
 ```
+Using the example element from the image, the above code would output the following:  
+> Top-Left-Point:  (20, 20)  
+> Top-Mid-Point:  (40, 20)  
+> Top-Right-Point:  (60, 20)
+> 
+> Left-Mid-Point:  (20, 30)  
+> Mid-Point:  (40, 30)  
+> Right-Mid-Point:  (60, 30)
+> 
+> Bottom-Left-Point:  (20, 40)  
+> Bottom-Mid-Point:  (40, 40)  
+> Bottom-Right-Point:  (60, 40)
+
+An MRE is available here: [demo/calc_coordinates.py](demo/calc_coordinates.py)
