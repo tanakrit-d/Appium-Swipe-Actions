@@ -1,4 +1,5 @@
 # pylint: disable=C0114,C0116,W0212
+
 from unittest.mock import Mock, patch
 import pytest
 from appium.webdriver.common.appiumby import AppiumBy
@@ -12,7 +13,7 @@ def mock_driver():
 
 @pytest.fixture(name="swipe_actions_instance")
 @patch.object(SwipeActions, '_retrieve_viewport_dimensions', return_value=(1080, 2400))
-def swipe_actions_instance(mock_retrieve_viewport_dimensions, mock_driver):
+def swipe_actions_instance(mock_driver):
     return SwipeActions(mock_driver)
 
 def test_initialization(swipe_actions_instance):
