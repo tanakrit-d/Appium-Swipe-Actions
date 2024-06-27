@@ -1,4 +1,4 @@
-# Enhanced Mobile Scroll Library
+# Enhanced Swipe Actions Library
  
 ## Currently a Work in Progress
 The goal of this library is to provide more robust and useful scrolling functionality for Appium mobile automation.  
@@ -17,30 +17,26 @@ Additionally, it avoids the automation attempting to perform actions on top of e
 
 ## Code Snippet
 ```python
-def swipe_element_into_view(self, locator_method: AppiumBy, locator_value: str):
-    action = ActionChains(self.driver)
-    action.w3c_actions = ActionBuilder(self.driver, mouse=PointerInput(Interaction.POINTER_TOUCHER, "touch"))
-    element_x, element_y = self.retrieve_element_location(locator_method, locator_value)
-    direction_x, direction_y = self.retrieve_relative_direction(element_x, element_y)
+    def swipe_element_into_view(
+        self, locator_method: AppiumBy, locator_value: str, direction: Direction
+    ):
+        """
+        Swipe to bring an element into view.
 
-    if direction in [Direction.UP, Direction.DOWN]:
-        distance_to_element = element_y - self.lower_bound
-        actions_total = distance_to_element / self.scrollable_x
-        actions_complete = distance_to_element // self.scrollable_x
-        actions_partial = self.scrollable_x * (actions_total - int(actions_total))
-        actions_complete = int(actions_complete)
-        
-        match direction:
-            case Direction.UP:
-                if actions_total > 1:
-                    self.perform_navigation_full_y(action, self.upper_bound, self.lower_bound, actions_complete)
-                if actions_partial > 50:
-                    self.perform_navigation_partial_y(action, self.upper_bound, self.lower_bound)
-            case Direction.DOWN:
-                if actions_total > 1:
-                    self.perform_navigation_full_y(action, self.lower_bound, self.upper_bound, actions_complete)
-                if actions_partial > 50:
-                    self.perform_navigation_partial_y(action, self.lower_bound, self.upper_bound)
+        Args:
+            locator_method: The method to locate the element (e.g., AppiumBy.XPATH).
+            locator_value: The value to use with the locator method.
+            direction: The direction to swipe (UP, DOWN, LEFT, or RIGHT).
+        """
+        action = self._create_action()
+        element_x, element_y = self.retrieve_element_location(
+            locator_method, locator_value
+        )
+
+        if direction in [Direction.UP, Direction.DOWN]:
+            self._swipe_element_into_view_vertical(action, element_y, direction)
+        elif direction in [Direction.LEFT, Direction.RIGHT]:
+            self._swipe_element_into_view_horizontal(action, element_x, direction)
 ```
 
 ## Understanding Element Location
