@@ -5,7 +5,6 @@ The goal of this library is to provide more robust and useful scrolling function
 It currently only targets use with Android, and has not been tested against iOS.
 
 ## To-Do
-- Write tests (lol)
 - Publish as a library
 
 ## Defining a Scrollable Region

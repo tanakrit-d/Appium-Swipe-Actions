@@ -10,6 +10,7 @@ python = "^3.12"
 Appium-Python-Client = "^4.0.0"
 selenium = "^4.20.0"
 pytest = "^8.2.0"
+pylint-pytest = "^1.1.8"
 
 
 [build-system]
