@@ -105,6 +105,24 @@ class EnhancedScroll(object):
         action.w3c_actions = ActionBuilder(self.driver, mouse=PointerInput(Interaction.POINTER_TOUCHER, "touch"))
         self.perform_navigation_full_x(action, self.left_bound, self.right_bound)
 
+    
+    def swipe_next(self):
+        """
+        Performs a complete swipe from the right-edge of the viewport, simulating a 'next page' type swipe.
+        """
+        action = ActionChains(self.driver)
+        action.w3c_actions = ActionBuilder(self.driver, mouse=PointerInput(Interaction.POINTER_TOUCHER, "touch"))
+        self.perform_navigation_full_x(action, self.viewport_width, 0)
+
+    
+    def swipe_previous(self):
+        """
+        Performs a complete swipe from the left-edge of the viewport, simulating a 'previous page' type swipe.
+        """
+        action = ActionChains(self.driver)
+        action.w3c_actions = ActionBuilder(self.driver, mouse=PointerInput(Interaction.POINTER_TOUCHER, "touch"))
+        self.perform_navigation_full_x(action, 0, self.viewport_width)
+
 
     def swipe_on_element(self, locator_method: AppiumBy, locator_value: str, direction: Direction):
         """
@@ -113,11 +131,11 @@ class EnhancedScroll(object):
         It then performs a complete ActionChain (swipe/scroll action) for the given direction.
 
         Explanation:
-            - See the provided diagram `./resources/understanding_element_position-dimension.png
+            - See the provided diagram `./resources/understanding_element_position-dimension.png`
 
         Parameters:
             `locator_method`: AppiumBy locator (e.g. AppiumBy.XPATH, AppiumBy.ACCESSIBILITY_ID)
-            `locator_value`: XPath or Attribute to match (e.g. `//ion-nav-view/ion-item[1]` or `android.widget.TextView`)
+            `locator_value`: XPath or Attribute to match (e.g. `//ion-nav-view/ion-item[1]` or `//android.widget.TextView`)
             `direction`: Direction for the action (e.g. a LEFT swipe starts from the right and finishes left)
         
         Example Usage:
@@ -176,13 +194,13 @@ class EnhancedScroll(object):
 
         Parameters:
             `locator_method`: AppiumBy locator (e.g. AppiumBy.XPATH, AppiumBy.ACCESSIBILITY_ID)
-            `locator_value`: XPath or Attribute to match (e.g. `//ion-nav-view/ion-item[1]` or `android.widget.TextView`)
+            `locator_value`: XPath or Attribute to match (e.g. `//ion-nav-view/ion-item[1]` or `//android.widget.TextView`)
             `direction`: Direction for the action (e.g. a LEFT swipe starts from the right and finishes left)
 
         Example Usage:
             ```
             gestures = new EnhancedScroll(driver)
-            gestures.swipe_element_into_view(AppiumBy.XPATH, 'android.widget.TextView')
+            gestures.swipe_element_into_view(AppiumBy.XPATH, '//android.widget.TextView')
             ```
         """
         action = ActionChains(self.driver)
@@ -207,7 +225,6 @@ class EnhancedScroll(object):
                         self.perform_navigation_full_y(action, self.lower_bound, self.upper_bound, actions_complete)
                     if actions_partial > 50:
                         self.perform_navigation_partial_y(action, self.lower_bound, self.upper_bound)
-        
         
         if direction in [Direction.LEFT, Direction.RIGHT]:
             distance_to_element = element_x - self.lower_bound
