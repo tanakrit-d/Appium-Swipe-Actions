@@ -7,6 +7,18 @@ It currently only targets use with Android, and has not been tested against iOS.
 ## To-Do
 - Publish as a library
 
+## Available Methods
+```python
+swipe_up()
+swipe_down()
+swipe_left()
+swipe_right()
+swipe_next() # Ignore scrollable region; full edge-to-edge swipe
+swipe_previous() # Ignore scrollable region; full edge-to-edge swipe
+swipe_on_element()
+swipe_element_into_view()
+```
+
 ## Defining a Scrollable Region
 This library divides the viewport into four bounds: upper, lower, left, and right. The default values can be overwritten.  
 Using these bounds, we then define a 'scrollable region'. We can then perform our scroll/swipe actions within this space.  
