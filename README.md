@@ -19,9 +19,7 @@ swipe_element_into_view()
 ```
 
 ## Demo and Example Usage
-<video width="432" height="936" controls>
-  <source src="demo/demo.mp4" type="video/mp4">
-</video>
+![Library Demo](demo/demo.gif)
 
 ```python
 class TestDemo(TestCore):
