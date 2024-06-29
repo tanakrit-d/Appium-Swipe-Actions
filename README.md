@@ -3,7 +3,6 @@ The purpose of this library is to provide more robust and useful swiping/scrolli
 It currently only targets use with Android, and has not been tested against iOS.
 
 ## To-Do
-- Update tests (haha...)
 - Publish as a library
 
 ## Available Methods
