@@ -19,7 +19,7 @@ swipe_element_into_view()
 ```
 
 ## Demo and Example Usage
-![Library Demo](demo/demo.gif)
+![Library Demo](demo/small_demo.gif)
 
 ```python
 class TestDemo(TestCore):
