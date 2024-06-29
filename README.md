@@ -47,7 +47,7 @@ The impetus for this is to recreate scrolling/swiping behaviour more similar to 
 Additionally, it avoids the automation attempting to perform actions on top of elements (such as headers or footers).  
 ![Viewport Diagram](resources/viewport_scrollable_bounds.png)
 
-## Understanding Element Location
+## Defining Element Points
 The importance of dynamically generating 'points' of an element to interact with allows us to account for re-sizing under a number of conditions (such as different devices/resolutions).
 
 For the purpose of this library, we are only concered with two attributes of an element: position and size.  
@@ -83,43 +83,6 @@ Using the example element from the image, the above code would output the follow
 > Bottom-Right-Point:  (60, 40)
 
 An example of this is available here: [demo/calc_coordinates.py](demo/calc_coordinates.py)
-
-## Code Snippet
-```python
-def swipe_on_element(
-    self, locator_method: AppiumBy, locator_value: str, direction: Direction
-):
-    """
-    Swipe on a specific element in the given direction.
-
-    Args:
-        locator_method: The method to locate the element (e.g., AppiumBy.XPATH).
-        locator_value: The value to use with the locator method.
-        direction: The direction to swipe (UP, DOWN, LEFT, or RIGHT).
-    """
-    action = self._create_action()
-    element = self.driver.find_element(by=locator_method, value=locator_value)
-
-    element_points = self._calculate_element_points(element)
-
-    match direction:
-        case Direction.UP:
-            self.perform_navigation_on_element(
-                action, element_points["bottom_mid"], element_points["top_mid"]
-            )
-        case Direction.DOWN:
-            self.perform_navigation_on_element(
-                action, element_points["top_mid"], element_points["bottom_mid"]
-            )
-        case Direction.RIGHT:
-            self.perform_navigation_on_element(
-                action, element_points["left_mid"], element_points["right_mid"]
-            )
-        case Direction.LEFT:
-            self.perform_navigation_on_element(
-                action, element_points["right_mid"], element_points["left_mid"]
-            )
-```
 
 ## Notes
 ### Swipe Element Into View
