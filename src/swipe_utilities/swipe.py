@@ -7,11 +7,25 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.actions import interaction
 from selenium.webdriver.common.actions.action_builder import ActionBuilder
 from selenium.webdriver.common.actions.pointer_input import PointerInput
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as Conditions
+from selenium.common.exceptions import NoSuchElementException, TimeoutException
 
 
 class Direction(Enum):
     """
-    Navigation directions.
+    Direction of the swipe action.
+    """
+
+    UP = "up"
+    DOWN = "down"
+    LEFT = "left"
+    RIGHT = "right"
+
+
+class SeekDirection(Enum):
+    """
+    Direction in which to seek for an element.
     """
 
     UP = "up"
@@ -22,7 +36,7 @@ class Direction(Enum):
 
 class SwipeActions:
     """
-    A class for enhanced scrolling and swiping functionality in Appium .
+    A class for enhanced scrolling and swiping functionality in Appium.
     """
 
     def __init__(self, driver, **kwargs):
@@ -31,9 +45,10 @@ class SwipeActions:
 
         Args:
             driver: The Appium driver instance.
-            **kwargs: Optional keyword arguments for customizing crop factors.
+            **kwargs: Optional keyword arguments for customizing crop factors and element probe attempts.
         """
         self.driver = driver
+        self.probe_attempts = kwargs.get("probe_attempts", 5)
 
         # Set viewport dimensions
         self.viewport_width, self.viewport_height = self._retrieve_viewport_dimensions()
@@ -42,10 +57,10 @@ class SwipeActions:
 
         # Default crop factor percentage bounds of the viewport for the scrollable area
         self.crop_factors = {
-            "upper_cf": kwargs.get("upper_cf", 0.05),
-            "lower_cf": kwargs.get("lower_cf", 0.80),
-            "left_cf": kwargs.get("left_cf", 0.05),
-            "right_cf": kwargs.get("right_cf", 0.95),
+            "upper_cf": kwargs.get("upper_cf", 0.20),
+            "lower_cf": kwargs.get("lower_cf", 0.90),
+            "left_cf": kwargs.get("left_cf", 0.10),
+            "right_cf": kwargs.get("right_cf", 0.90),
         }
 
         # Set scrolling boundaries and scrollable area
@@ -157,11 +172,11 @@ class SwipeActions:
                 )
             case Direction.RIGHT:
                 self.perform_navigation_on_element(
-                    action, element_points["right_mid"], element_points["left_mid"]
+                    action, element_points["left_mid"], element_points["right_mid"]
                 )
             case Direction.LEFT:
                 self.perform_navigation_on_element(
-                    action, element_points["left_mid"], element_points["right_mid"]
+                    action, element_points["right_mid"], element_points["left_mid"]
                 )
 
     def _calculate_element_points(self, element):
@@ -189,29 +204,80 @@ class SwipeActions:
             "bottom_right": (x + width, y + height),
         }
 
+    def _probe_for_element(self, locator_method: AppiumBy, locator_value: str) -> bool:
+        """
+        Check if an element is within the viewport.
+        Only necessary if the element is not yet loaded into the DOM, or if device context is NATIVE.
+        This is because the library cannot swipe an element into view if it cannot initially locate it.
+        """
+        try:
+            self.retrieve_element_location(locator_method, locator_value)
+            return True
+        except (NoSuchElementException, TimeoutException):
+            return False
+
     def swipe_element_into_view(
-        self, locator_method: AppiumBy, locator_value: str, direction: Direction
+        self, locator_method: AppiumBy, locator_value: str, direction: SeekDirection
     ):
         """
         Swipe to bring an element into view.
+        The multipliers in `swipe_actions` method calls scale the percentage factor for swipe for the partial_percentage argument.
 
         Args:
             locator_method: The method to locate the element (e.g., AppiumBy.XPATH).
             locator_value: The value to use with the locator method.
-            direction: The direction to swipe (UP, DOWN, LEFT, or RIGHT).
+            direction: The direction to search for the element (UP, DOWN, LEFT, or RIGHT).
         """
         action = self._create_action()
-        element_x, element_y = self.retrieve_element_location(
-            locator_method, locator_value
-        )
 
-        if direction in [Direction.UP, Direction.DOWN]:
-            self._swipe_element_into_view_vertical(action, element_y, direction)
-        elif direction in [Direction.LEFT, Direction.RIGHT]:
-            self._swipe_element_into_view_horizontal(action, element_x, direction)
+        if self._probe_for_element(locator_method, locator_value):
+            element_x, element_y = self.retrieve_element_location(
+                locator_method, locator_value
+            )
+
+            if direction in [SeekDirection.UP, SeekDirection.DOWN]:
+                self._swipe_element_into_view_vertical(action, element_y, direction)
+            elif direction in [SeekDirection.LEFT, SeekDirection.RIGHT]:
+                self._swipe_element_into_view_horizontal(action, element_x, direction)
+        else:
+            swipe_actions = {
+                SeekDirection.UP: lambda: self.perform_navigation_partial_y(
+                    action,
+                    self.bounds["upper"],
+                    self.bounds["lower"],
+                    self.scrollable_area["y"] * -0.4,
+                ),
+                SeekDirection.DOWN: lambda: self.perform_navigation_partial_y(
+                    action,
+                    self.bounds["lower"],
+                    self.bounds["upper"],
+                    self.scrollable_area["y"] * 0.4,
+                ),
+                SeekDirection.LEFT: lambda: self.perform_navigation_partial_x(
+                    action,
+                    self.bounds["left"],
+                    self.bounds["right"],
+                    self.scrollable_area["x"] * -0.2,
+                ),
+                SeekDirection.RIGHT: lambda: self.perform_navigation_partial_x(
+                    action,
+                    self.bounds["right"],
+                    self.bounds["left"],
+                    self.scrollable_area["x"] * 0.2,
+                ),
+            }
+
+            for _ in range(self.probe_attempts):
+                if self._probe_for_element(locator_method, locator_value):
+                    return
+                swipe_actions[direction]()
+
+            raise NoSuchElementException(
+                f"Element not found after {self.probe_attempts} attempts"
+            )
 
     def _swipe_element_into_view_vertical(
-        self, action: ActionChains, element_y: int, direction: Direction
+        self, action: ActionChains, element_y: int, direction: SeekDirection
     ):
         """
         Perform vertical swipes to bring an element into view.
@@ -219,7 +285,7 @@ class SwipeActions:
         Args:
             action: The ActionChains object to use for swiping.
             element_y: The y-coordinate of the element to bring into view.
-            direction: The direction to swipe (UP or DOWN).
+            The direction to search for the element (UP or DOWN).
         """
         distance_to_element = element_y - self.bounds["lower"]
         actions_total = distance_to_element / self.scrollable_area["y"]
@@ -228,15 +294,15 @@ class SwipeActions:
             self.scrollable_area["y"] * (actions_total - actions_complete)
         )
 
-        if direction == Direction.UP:
-            start, end = self.bounds["lower"], self.bounds["upper"]
-        else:
+        if direction == SeekDirection.UP:
             start, end = self.bounds["upper"], self.bounds["lower"]
+        else:
+            start, end = self.bounds["lower"], self.bounds["upper"]
 
         if actions_total > 1:
             self.perform_navigation_full_y(action, start, end, actions_complete)
         if actions_partial > 50:
-            self.perform_navigation_partial_y(action, start, actions_partial)
+            self.perform_navigation_partial_y(action, start, end, actions_partial)
 
     def _swipe_element_into_view_horizontal(
         self, action: ActionChains, element_x: int, direction: Direction
@@ -247,7 +313,7 @@ class SwipeActions:
         Args:
             action: The ActionChains object to use for swiping.
             element_x: The x-coordinate of the element to bring into view.
-            direction: The direction to swipe (LEFT or RIGHT).
+            The direction to search for the element (LEFT or RIGHT)
         """
         distance_to_element = element_x - self.bounds["left"]
         actions_total = distance_to_element / self.scrollable_area["x"]
@@ -264,7 +330,7 @@ class SwipeActions:
         if actions_total > 1:
             self.perform_navigation_full_x(action, start, end, actions_complete)
         if actions_partial > 50:
-            self.perform_navigation_partial_x(action, start, actions_partial)
+            self.perform_navigation_partial_x(action, start, end, actions_partial)
 
     def perform_navigation_full_y(
         self,
@@ -290,7 +356,11 @@ class SwipeActions:
             )
 
     def perform_navigation_partial_y(
-        self, action: ActionChains, initial_bound: int, partial_percentage: int
+        self,
+        action: ActionChains,
+        initial_bound: int,
+        finish_bound: int,
+        partial_percentage: int,
     ):
         """
         Perform a partial vertical navigation swipe.
@@ -303,7 +373,7 @@ class SwipeActions:
         self._perform_swipe(
             action,
             (self.viewport_x_mid_point, initial_bound),
-            (self.viewport_x_mid_point, initial_bound + partial_percentage),
+            (self.viewport_x_mid_point, finish_bound + partial_percentage),
         )
 
     def perform_navigation_full_x(
@@ -330,7 +400,11 @@ class SwipeActions:
             )
 
     def perform_navigation_partial_x(
-        self, action: ActionChains, initial_bound: int, partial_percentage: int
+        self,
+        action: ActionChains,
+        initial_bound: int,
+        finish_bound: int,
+        partial_percentage: int,
     ):
         """
         Perform a partial horizontal navigation swipe.
@@ -343,7 +417,7 @@ class SwipeActions:
         self._perform_swipe(
             action,
             (initial_bound, self.viewport_y_mid_point),
-            (initial_bound + partial_percentage, self.viewport_y_mid_point),
+            (finish_bound + partial_percentage, self.viewport_y_mid_point),
         )
 
     def perform_navigation_on_element(
@@ -393,5 +467,7 @@ class SwipeActions:
         Returns:
             A tuple containing the x and y coordinates of the element.
         """
-        element = self.driver.find_element(by=locator_method, value=locator_value)
+        element = WebDriverWait(self.driver, 2).until(
+            Conditions.presence_of_element_located((locator_method, locator_value))
+        )
         return element.location["x"], element.location["y"]
