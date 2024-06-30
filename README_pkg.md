@@ -22,7 +22,7 @@ swipe_element_into_view()
 ```
 
 ## Demo and Example Usage
-![Library Demo](demo/small_demo.gif)
+![Library Demo](https://github.com/Tanakrit-D/Appium-Swipe-Actions/raw/main/demo/small_demo.gif)
 
 ```python
 from appium_swipe_actions import SwipeActions, SeekDirection
@@ -50,7 +50,7 @@ This library divides the viewport into four bounds: upper, lower, left, and righ
 Using these bounds, we then define a 'scrollable region'. We can then perform our scroll/swipe actions within this space.  
 The impetus for this is to recreate scrolling/swiping behaviour more similar to a user and avoid hardcoding co-ordinates.  
 Additionally, it avoids the automation attempting to perform actions on top of elements (such as headers or footers).  
-![Viewport Diagram](resources/viewport_scrollable_bounds.png)
+![Viewport Diagram](https://github.com/Tanakrit-D/Appium-Swipe-Actions/raw/main/resources/viewport_scrollable_bounds.png)
 
 ## Defining Element Points
 The importance of dynamically generating 'points' of an element to interact with allows us to account for re-sizing under a number of conditions (such as different devices/resolutions).
@@ -59,7 +59,7 @@ For the purpose of this library, we are only concered with two attributes of an 
 The element's co-ordinates within the viewport is considered the top-left-point.
 
 We can then use the element size to determine where it occupies relative to the view-port position.
-![Element Diagram](resources/understanding_element_position-dimension.png)
+![Element Diagram](https://github.com/Tanakrit-D/Appium-Swipe-Actions/raw/main/resources/understanding_element_position-dimension.png)
 
 ```python
 top_left_point      = element.location["x"], element.location["y"]
@@ -89,7 +89,7 @@ Bottom-Mid-Point:  (40, 40)
 Bottom-Right-Point:  (60, 40)
 ```
 
-An example of this is available here: [demo/calc_coordinates.py](demo/calc_coordinates.py)
+An example of this is available here: [demo/calc_coordinates.py](https://raw.githubusercontent.com/Tanakrit-D/Appium-Swipe-Actions/blob/main/demo/calc_coordinates.py)
 
 ## Notes
 ### Swipe Element Into View

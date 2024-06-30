@@ -6,29 +6,29 @@ class Element:
 def calculate_coordinates():
     element = Element(20, 20, 40, 20)
 
-    element_top_left_point      = element.location["x"], element.location["y"]
-    element_top_mid_point       = element.location["x"] + (element.size["width"] // 2), element.location["y"]
-    element_top_right_point     = element.location["x"] + element.size["width"], element.location["y"]
+    top_left_point      = element.location["x"], element.location["y"]
+    top_mid_point       = element.location["x"] + (element.size["width"] // 2), element.location["y"]
+    top_right_point     = element.location["x"] + element.size["width"], element.location["y"]
     
-    element_left_mid_point      = element.location["x"], element.location["y"] + (element.size["height"] // 2)
-    element_mid_point           = element.location["x"] + (element.size["width"] // 2), element.location["y"] + (element.size["height"] // 2)
-    element_right_mid_point     = element.location["x"] + element.size["width"], element.location["y"] + (element.size["height"] // 2)
+    left_mid_point      = element.location["x"], element.location["y"] + (element.size["height"] // 2)
+    mid_point           = element.location["x"] + (element.size["width"] // 2), element.location["y"] + (element.size["height"] // 2)
+    right_mid_point     = element.location["x"] + element.size["width"], element.location["y"] + (element.size["height"] // 2)
 
-    element_bottom_left_point   = element.location["x"], element.location["y"] + element.size["height"]
-    element_bottom_mid_point    = element.location["x"] + (element.size["width"] // 2), element.location["y"] + element.size["height"]
-    element_bottom_right_point  = element.location["x"] + element.size["width"], element.location["y"] + element.size["height"]
+    bottom_left_point   = element.location["x"], element.location["y"] + element.size["height"]
+    bottom_mid_point    = element.location["x"] + (element.size["width"] // 2), element.location["y"] + element.size["height"]
+    bottom_right_point  = element.location["x"] + element.size["width"], element.location["y"] + element.size["height"]
 
-    print("Top-Left-Point: ", element_top_left_point)
-    print("Top-Mid-Point: ", element_top_mid_point)
-    print("Top-Right-Point: ", element_top_right_point)
+    print("Top-Left-Point: ", top_left_point)
+    print("Top-Mid-Point: ", top_mid_point)
+    print("Top-Right-Point: ", top_right_point)
     print()
-    print("Left-Mid-Point: ", element_left_mid_point)
-    print("Mid-Point: ", element_mid_point)
-    print("Right-Mid-Point: ", element_right_mid_point)
+    print("Left-Mid-Point: ", left_mid_point)
+    print("Mid-Point: ", mid_point)
+    print("Right-Mid-Point: ", right_mid_point)
     print()
-    print("Bottom-Left-Point: ", element_bottom_left_point)
-    print("Bottom-Mid-Point: ", element_bottom_mid_point)
-    print("Bottom-Right-Point: ", element_bottom_right_point)
+    print("Bottom-Left-Point: ", bottom_left_point)
+    print("Bottom-Mid-Point: ", bottom_mid_point)
+    print("Bottom-Right-Point: ", bottom_right_point)
 
 if __name__ == "__main__":
     calculate_coordinates()

@@ -1,5 +1,3 @@
-# pylint: disable=C0114,C0116,W0212,W0613
-
 from typing import Tuple, Optional
 from enum import Enum
 from appium.webdriver.common.appiumby import AppiumBy
@@ -36,7 +34,7 @@ class SeekDirection(Enum):
 
 class SwipeActions:
     """
-    A class for enhanced scrolling and swiping functionality in Appium.
+    A class for enhanced swiping and scrolling functionality in Appium.
     """
 
     def __init__(self, driver, **kwargs):
@@ -50,12 +48,10 @@ class SwipeActions:
         self.driver = driver
         self.probe_attempts = kwargs.get("probe_attempts", 5)
 
-        # Set viewport dimensions
         self.viewport_width, self.viewport_height = self._retrieve_viewport_dimensions()
         self.viewport_x_mid_point = self.viewport_width // 2
         self.viewport_y_mid_point = self.viewport_height // 2
 
-        # Default crop factor percentage bounds of the viewport for the scrollable area
         self.crop_factors = {
             "upper_cf": kwargs.get("upper_cf", 0.20),
             "lower_cf": kwargs.get("lower_cf", 0.90),
@@ -63,7 +59,6 @@ class SwipeActions:
             "right_cf": kwargs.get("right_cf", 0.90),
         }
 
-        # Set scrolling boundaries and scrollable area
         self._set_boundaries_and_scrollable_area()
 
     def _retrieve_viewport_dimensions(self) -> Optional[Tuple[int, int]]:
@@ -221,7 +216,7 @@ class SwipeActions:
     ):
         """
         Swipe to bring an element into view.
-        The multipliers in `swipe_actions` method calls scale the percentage factor for swipe for the partial_percentage argument.
+        The multipliers in `swipe_actions` method scale the percentage factor for swipe for the partial_percentage argument.
 
         Args:
             locator_method: The method to locate the element (e.g., AppiumBy.XPATH).

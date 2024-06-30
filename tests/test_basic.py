@@ -1,14 +1,16 @@
-# pylint: disable=C0114,C0115,C0116,R0903,W0212,W0621
+# pylint: disable=C0115,C0116,R0903
 
 import pytest
 from appium.webdriver.common.appiumby import AppiumBy
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
-from src.swipe_utilities.swipe import SwipeActions, Direction, SeekDirection
+from src.appium_swipe_actions.core import SwipeActions, Direction, SeekDirection
+
 
 class MockElement:
     def __init__(self, location, size):
         self.location = location
         self.size = size
+
 
 @pytest.fixture(name="mock_driver")
 def mock_driver():
@@ -29,9 +31,11 @@ def mock_driver():
 
     return MockDriver()
 
+
 @pytest.fixture(name="swipe_actions")
 def swipe_actions(mock_driver):
     return SwipeActions(mock_driver)
+
 
 def test_init(swipe_actions):
     assert swipe_actions.viewport_width == 1080
@@ -41,47 +45,64 @@ def test_init(swipe_actions):
     assert swipe_actions.bounds["left"] == 108
     assert swipe_actions.bounds["right"] == 972
 
+
 def test_swipe_up(swipe_actions):
     swipe_actions.swipe_up()
     assert len(swipe_actions.driver.actions) > 0
+
 
 def test_swipe_down(swipe_actions):
     swipe_actions.swipe_down()
     assert len(swipe_actions.driver.actions) > 0
 
+
 def test_swipe_left(swipe_actions):
     swipe_actions.swipe_left()
     assert len(swipe_actions.driver.actions) > 0
+
 
 def test_swipe_right(swipe_actions):
     swipe_actions.swipe_right()
     assert len(swipe_actions.driver.actions) > 0
 
+
 def test_swipe_next(swipe_actions):
     swipe_actions.swipe_next()
     assert len(swipe_actions.driver.actions) > 0
+
 
 def test_swipe_previous(swipe_actions):
     swipe_actions.swipe_previous()
     assert len(swipe_actions.driver.actions) > 0
 
+
 def test_swipe_on_element(swipe_actions):
     swipe_actions.swipe_on_element(AppiumBy.XPATH, "//existing_element", Direction.UP)
     assert len(swipe_actions.driver.actions) > 0
 
+
 def test_swipe_element_into_view_success(swipe_actions):
-    swipe_actions.swipe_element_into_view(AppiumBy.XPATH, "//existing_element", SeekDirection.DOWN)
+    swipe_actions.swipe_element_into_view(
+        AppiumBy.XPATH, "//existing_element", SeekDirection.DOWN
+    )
     assert len(swipe_actions.driver.actions) > 0
+
 
 def test_swipe_element_into_view_not_found(swipe_actions):
     with pytest.raises(NoSuchElementException):
-        swipe_actions.swipe_element_into_view(AppiumBy.XPATH, "//non_existing_element", SeekDirection.UP)
+        swipe_actions.swipe_element_into_view(
+            AppiumBy.XPATH, "//non_existing_element", SeekDirection.UP
+        )
+
 
 def test_retrieve_element_location(swipe_actions):
     x, y = swipe_actions.retrieve_element_location(AppiumBy.XPATH, "//existing_element")
     assert x == 100
     assert y == 200
 
+
 def test_retrieve_element_location_not_found(swipe_actions):
     with pytest.raises((NoSuchElementException, TimeoutException)):
-        swipe_actions.retrieve_element_location(AppiumBy.XPATH, "//non_existing_element")
+        swipe_actions.retrieve_element_location(
+            AppiumBy.XPATH, "//non_existing_element"
+        )
