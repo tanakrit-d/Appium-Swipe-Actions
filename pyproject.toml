@@ -1,18 +1,27 @@
 [tool.poetry]
-name = "enhanced-mobile-scroll-library"
-version = "0.1.0"
-description = "Enhanced mobile scrolling tools. Primarily designed for automation testing with Appium."
+name = "appium-swipe-actions"
+version = "0.1.1"
+description = "Enhanced Swipe Actions Library for Appium."
 authors = ["Tanakrit-D <127579510+Tanakrit-D@users.noreply.github.com>"]
-readme = "README.md"
+license = "MIT"
+readme = "README_pkg.md"
+keywords = ["appium", "swipe", "scroll"]
 
 [tool.poetry.dependencies]
 python = "^3.12"
 Appium-Python-Client = "^4.0.0"
 selenium = "^4.20.0"
+
+[tool.poetry.group.test.dependencies]
 pytest = "^8.2.0"
 pylint-pytest = "^1.1.8"
-
+twine = "^5.1.1"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[project.urls]
+Homepage = "https://github.com/Tanakrit-D/Appium-Swipe-Actions"
+Repository = "https://github.com/Tanakrit-D/Appium-Swipe-Actions"
+Issues = "https://github.com/Tanakrit-D/Appium-Swipe-Actions/issues"
