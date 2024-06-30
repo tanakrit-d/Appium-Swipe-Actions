@@ -25,7 +25,7 @@ swipe_element_into_view()
 ![Library Demo](https://github.com/Tanakrit-D/Appium-Swipe-Actions/raw/main/demo/small_demo.gif)
 
 ```python
-from appium_swipe_actions import SwipeActions, SeekDirection
+from appium_swipe_actions.core import SwipeActions, SeekDirection
 
 class TestDemo(TestCore):
     def test_element_search(self):
