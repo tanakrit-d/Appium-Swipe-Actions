@@ -43,11 +43,11 @@ class SwipeActions:
 
         Args:
             driver: The Appium driver instance.
-            **kwargs: Optional keyword arguments for customizing crop factors and element probe attempts.
+            **kwargs: Optional keyword arguments for customizing crop factors, element probe attempts, and probe timeout.
         """
         self.driver = driver
         self.probe_attempts = kwargs.get("probe_attempts", 5)
-        self.timeout = kwargs.get("timeout", 1)
+        self.timeout = kwargs.get("timeout", 0.5)
 
         self.viewport_width, self.viewport_height = self._retrieve_viewport_dimensions()
         self.viewport_x_mid_point = self.viewport_width // 2
