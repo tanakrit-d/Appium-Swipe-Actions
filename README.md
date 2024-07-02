@@ -22,7 +22,7 @@ swipe_element_into_view()
 ```
 
 ## Demo and Example Usage
-![Library Demo](demo/small_demo.gif)
+![Library Demo](demo/example.gif)
 
 ```python
 from appium_swipe_actions.core import SwipeActions, SeekDirection
