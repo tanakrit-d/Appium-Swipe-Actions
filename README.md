@@ -22,7 +22,7 @@ swipe_element_into_view()
 ```
 
 ## Demo and Example Usage
-![Library Demo](demo/small_demo.gif)
+![Library Demo](demo/example.gif)
 
 ```python
 from appium_swipe_actions.core import SwipeActions, SeekDirection
@@ -97,6 +97,9 @@ The method `swipe_element_into_view()` contains the helper `_probe_for_element()
 This is because in the event an element is not loaded into the DOM yet or the driver context is NATIVE - it will not be able to locate the element.  
 Instead, it will start calling `perform_navigation_partial_()` and seek the element for a set number of attempts.  
 This can be set/overwritten when initialising the class with the `**kwargs("probe_attempts")`.
+
+Additionally, the `if actions_partial > 50:` ensures the pixel distance is large enough to warrant an action.  
+If it is less than 50px, the swipe action will be interpreted by the OS as a double-tap.
 
 ### Wait/Expected Conditions
 The library will not wait for the elements to be visible before interacting with them (such as `swipe_on_element()`).  
