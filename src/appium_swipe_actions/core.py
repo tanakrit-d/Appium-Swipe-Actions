@@ -47,6 +47,7 @@ class SwipeActions:
         """
         self.driver = driver
         self.probe_attempts = kwargs.get("probe_attempts", 5)
+        self.timeout = kwargs.get("timeout", 1)
 
         self.viewport_width, self.viewport_height = self._retrieve_viewport_dimensions()
         self.viewport_x_mid_point = self.viewport_width // 2
@@ -462,7 +463,7 @@ class SwipeActions:
         Returns:
             A tuple containing the x and y coordinates of the element.
         """
-        element = WebDriverWait(self.driver, 2).until(
+        element = WebDriverWait(self.driver, self.timeout).until(
             Conditions.presence_of_element_located((locator_method, locator_value))
         )
         return element.location["x"], element.location["y"]
