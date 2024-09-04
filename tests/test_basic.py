@@ -1,9 +1,10 @@
 # pylint: disable=C0115,C0116,R0903
 
 import pytest
-from appium.webdriver.common.appiumby import AppiumBy
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
-from src.appium_swipe_actions.core import SwipeActions, Direction, SeekDirection
+
+from appium.webdriver.common.appiumby import AppiumBy
+from src.appium.swipe.actions import Direction, SeekDirection, SwipeActions
 
 
 class MockElement:
