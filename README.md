@@ -1,4 +1,4 @@
-# Enhanced Swipe Actions Library
+# Appium Enhanced Swipe Actions Library
 The purpose of this library is to provide more robust and useful swiping/scrolling functionality for Appium mobile automation.  
 It currently only targets use with Android, and has not been tested against iOS.
 
@@ -6,8 +6,20 @@ It currently only targets use with Android, and has not been tested against iOS.
 ```bash
 pip install appium-swipe-actions
 # or
-poetry add appium-swipe-actions
+rye add appium-swipe-actions
 ```
+
+### Changelog
+```md
+## 0.1.3 (2024-09-04)
+- Updated import strategy, the structure is now:  
+    ```python
+    from appium.swipe.actions import SwipeActions, SeekDirection, Direction
+    ```
+- Changed to ruff for linting/formatting
+- Changed to rye for packaging
+```
+See full list of changes: [CHANGES.md](./CHANGES.md)
 
 ## Available Methods
 ```python
@@ -25,18 +37,14 @@ swipe_element_into_view()
 ![Library Demo](demo/example.gif)
 
 ```python
-from appium_swipe_actions.core import SwipeActions, SeekDirection
+from appium.swipe.actions import SwipeActions, SeekDirection, Direction
 
 class TestDemo(TestCore):
     def test_element_search(self):
         swipe = SwipeActions(self.driver)
         self.driver.find_element(
             by=AppiumBy.ANDROID_UIAUTOMATOR,
-            value='new UiSelector().description("Today")',
-        )
-        self.driver.find_element(
-            by=AppiumBy.ANDROID_UIAUTOMATOR,
-            value='new UiSelector().className("android.widget.Button").instance(3)',
+            value='new UiSelector().className("android.widget.Button")',
         ).click()
         swipe.swipe_element_into_view(
             AppiumBy.ANDROID_UIAUTOMATOR,

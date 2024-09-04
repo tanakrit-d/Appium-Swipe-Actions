@@ -1,27 +1,60 @@
-[tool.poetry]
+[project]
 name = "appium-swipe-actions"
-version = "0.1.2"
-description = "Enhanced Swipe Actions Library for Appium."
-authors = ["Tanakrit-D <127579510+Tanakrit-D@users.noreply.github.com>"]
-license = "MIT"
+version = "0.1.3"
+description = "Enhanced Swipe Actions Library for Appium"
+authors = [
+    { name = "Dominic", email = "127579510+Tanakrit-D@users.noreply.github.com" }
+]
+dependencies = [
+    "appium-python-client>=4.1.0",
+    "selenium>=4.24.0",
+]
+license = { file = "LICENSE" }
 readme = "README_pkg.md"
+requires-python = ">= 3.8"
 keywords = ["appium", "swipe", "scroll"]
-
-[tool.poetry.dependencies]
-python = "^3.12"
-Appium-Python-Client = "^4.0.0"
-selenium = "^4.20.0"
-
-[tool.poetry.group.test.dependencies]
-pytest = "^8.2.0"
-pylint-pytest = "^1.1.8"
-twine = "^5.1.1"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.rye]
+managed = true
+dev-dependencies = [
+    "pytest>=8.3.2",
+    "twine>=5.1.1",
+    "ruff>=0.6.3",
+]
+
+[tool.ruff.lint]
+select = [
+    # pycodestyle
+    "E",
+    # Pyflakes
+    "F",
+    # pyupgrade
+    "UP",
+    # flake8-bugbear
+    "B",
+    # flake8-simplify
+    "SIM",
+    # isort
+    "I",
+]
+ignore = ["E501"]
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/appium"]
 
 [project.urls]
-Homepage = "https://github.com/Tanakrit-D/Appium-Swipe-Actions"
-Repository = "https://github.com/Tanakrit-D/Appium-Swipe-Actions"
-Issues = "https://github.com/Tanakrit-D/Appium-Swipe-Actions/issues"
+homepage = "https://github.com/Tanakrit-D/Appium-Swipe-Actions"
+repository = "https://github.com/Tanakrit-D/Appium-Swipe-Actions"
+issues = "https://github.com/Tanakrit-D/Appium-Swipe-Actions/issues"
