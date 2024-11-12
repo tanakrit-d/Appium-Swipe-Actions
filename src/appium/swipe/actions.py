@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Optional, Tuple
+from typing import Optional, tuple
 
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from selenium.webdriver.common.action_chains import ActionChains
@@ -64,7 +64,7 @@ class SwipeActions:
 
         self._set_boundaries_and_scrollable_area()
 
-    def _retrieve_viewport_dimensions(self) -> Optional[Tuple[int, int]]:
+    def _retrieve_viewport_dimensions(self) -> Optional[tuple[int, int]]:
         """
         Retrieve the viewport dimensions from the driver.
 
@@ -421,8 +421,8 @@ class SwipeActions:
     def perform_navigation_on_element(
         self,
         action: ActionChains,
-        initial_bound: Tuple[int, int],
-        finish_bound: Tuple[int, int],
+        initial_bound: tuple[int, int],
+        finish_bound: tuple[int, int],
     ):
         """
         Perform a navigation swipe on a specific element.
@@ -435,7 +435,7 @@ class SwipeActions:
         self._perform_swipe(action, initial_bound, finish_bound)
 
     def _perform_swipe(
-        self, action: ActionChains, start: Tuple[int, int], end: Tuple[int, int]
+        self, action: ActionChains, start: tuple[int, int], end: tuple[int, int]
     ):
         """
         Perform a swipe action from start to end coordinates.
@@ -454,7 +454,7 @@ class SwipeActions:
 
     def retrieve_element_location(
         self, locator_method: AppiumBy, locator_value: str
-    ) -> Tuple[int, int]:
+    ) -> tuple[int, int]:
         """
         Retrieve the location of an element.
 
