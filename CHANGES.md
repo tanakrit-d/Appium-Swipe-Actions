@@ -2,7 +2,7 @@
 
 ## 0.1.4 (2024-MM-DD)
 
-- Added iOS compatibility
+- Verified iOS compatibility
 - Changed to uv for packaging
 
 ## 0.1.3 (2024-09-04)

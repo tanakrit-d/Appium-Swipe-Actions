@@ -1,10 +1,10 @@
 [project]
-name = "appium-swipe-actions"
-version = "0.1.4"
-description = "Enhanced swipe actions library for Appium"
+name = "appium-gesture-actions"
+version = "0.2.0"
+description = "Gesture actions library for Appium"
 readme = "README_pkg.md"
 requires-python = ">=3.9"
-keywords = ["appium", "swipe", "scroll"]
+keywords = ["appium", "actions", "gestures", "swipe", "scroll", "double tap", "zoom", "drag and drop"]
 dependencies = [
     "appium-python-client>=4.3.0",
     "selenium>=4.26.1",
@@ -46,6 +46,6 @@ allow-direct-references = true
 packages = ["src/appium"]
 
 [project.urls]
-homepage = "https://github.com/tanakrit-d/appium-swipe-actions"
-repository = "https://github.com/tanakrit-d/appium-swipe-actions"
-issues = "https://github.com/tanakrit-d/appium-swipe-actions/issues"
+homepage = "https://github.com/tanakrit-d/appium-gesture-actions"
+repository = "https://github.com/tanakrit-d/appium-gesture-actions"
+issues = "https://github.com/tanakrit-d/appium-gesture-actions/issues"

@@ -1,11 +1,11 @@
 from .actions import (
     Direction,
+    GestureActions,
     SeekDirection,
-    SwipeActions,
 )
 
 __all__ = [
-    "SwipeActions",
+    "GestureActions",
     "Direction",
     "SeekDirection",
 ]
