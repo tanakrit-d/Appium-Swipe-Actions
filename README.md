@@ -23,7 +23,7 @@ The purpose of this library is to provide a number gesture/interaction functions
 
 - [x] Android  
   Requires: `appium driver install uiautomator2`
-- [ ] iOS  
+- [ ] iOS (unverified)  
   Requires: `appium driver install xcuitest`
 
 ## Install
@@ -158,3 +158,7 @@ Ensure you implement this yourself before calling a gesture action on an element
 #### Android
 
 If you would like to see the pointer interactions and coordinates, this can be enabled on a device level in `Settings > Developer Options > Pointer location`
+
+## Acknowledgements
+
+- [mmonfared](https://github.com/mmonfared) for his blog on writing a zoom function
