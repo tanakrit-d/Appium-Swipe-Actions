@@ -57,6 +57,8 @@ See full list of changes: [CHANGES.md](./CHANGES.md)
 
 - [x] Expand functionality to include gestures
 - [ ] Robust error handling
+- [ ] Remove direct accessing of `ActionBuilder`
+- [ ] Return bool for most functions
 - [ ] Handling of different orientations
 - [ ] Allow for re-initialisation of viewport calculations
 

@@ -1,3 +1,4 @@
+import logging
 from enum import Enum
 from typing import Optional
 
@@ -5,6 +6,7 @@ from selenium.common.exceptions import (
     ElementNotInteractableException,
     NoSuchElementException,
     TimeoutException,
+    WebDriverException,
 )
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.actions import interaction
@@ -14,6 +16,18 @@ from selenium.webdriver.support import expected_conditions as Conditions
 from selenium.webdriver.support.wait import WebDriverWait
 
 from appium.webdriver.common.appiumby import AppiumBy
+
+from .exceptions import (
+    DragDropError,
+    ElementInteractionError,
+    ElementNotInViewError,
+    InvalidGestureError,
+    SwipeError,
+    ViewportError,
+    ZoomError,
+)
+
+logger = logging.getLogger(__name__)
 
 
 class Direction(Enum):
@@ -57,18 +71,29 @@ class GestureActions:
         self.probe_attempts = kwargs.get("probe_attempts", 5)
         self.timeout = kwargs.get("timeout", 0.25)
 
-        self.viewport_width, self.viewport_height = self._retrieve_viewport_dimensions()
-        self.viewport_x_mid_point = self.viewport_width // 2
-        self.viewport_y_mid_point = self.viewport_height // 2
+        try:
+            self.viewport_width, self.viewport_height = (
+                self._retrieve_viewport_dimensions()
+            )
+            if not self.viewport_width or not self.viewport_height:
+                raise ViewportError("Could not retrieve valid viewport dimensions")
 
-        self.crop_factors = {
-            "upper_cf": kwargs.get("upper_cf", 0.20),
-            "lower_cf": kwargs.get("lower_cf", 0.90),
-            "left_cf": kwargs.get("left_cf", 0.10),
-            "right_cf": kwargs.get("right_cf", 0.90),
-        }
+            self.viewport_x_mid_point = self.viewport_width // 2
+            self.viewport_y_mid_point = self.viewport_height // 2
 
-        self._set_boundaries_and_scrollable_area()
+            self.crop_factors = {
+                "upper_cf": kwargs.get("upper_cf", 0.20),
+                "lower_cf": kwargs.get("lower_cf", 0.90),
+                "left_cf": kwargs.get("left_cf", 0.10),
+                "right_cf": kwargs.get("right_cf", 0.90),
+            }
+
+            self._set_boundaries_and_scrollable_area()
+
+        except Exception as e:
+            msg = f"Failed to initialize GestureActions: {str(e)}"
+            logger.error(msg)
+            raise ViewportError(msg) from e
 
     def _retrieve_viewport_dimensions(self) -> Optional[tuple[int, int]]:
         """
@@ -77,10 +102,15 @@ class GestureActions:
         Returns:
             A tuple of (width, height) or None if dimensions couldn't be retrieved.
         """
-        viewport = self.driver.get_window_size()
-        if viewport is None:
-            return None
-        return viewport["width"], viewport["height"]
+        try:
+            viewport = self.driver.get_window_size()
+            if viewport is None:
+                raise ViewportError("Failed to retrieve viewport dimensions")
+            return viewport["width"], viewport["height"]
+        except WebDriverException as e:
+            msg = f"Failed to get viewport dimensions: {str(e)}"
+            logger.error(msg)
+            raise ViewportError(msg) from e
 
     def _set_boundaries_and_scrollable_area(self):
         """
@@ -105,11 +135,16 @@ class GestureActions:
         Returns:
             An ActionChains object configured for touch input.
         """
-        action = ActionChains(self.driver)
-        action.w3c_actions = ActionBuilder(
-            self.driver, mouse=PointerInput(interaction.POINTER_TOUCH, "touch")
-        )
-        return action
+        try:
+            action = ActionChains(self.driver)
+            action.w3c_actions = ActionBuilder(
+                self.driver, mouse=PointerInput(interaction.POINTER_TOUCH, "touch")
+            )
+            return action
+        except Exception as e:
+            msg = f"Failed to create action chains: {str(e)}"
+            logger.error(msg)
+            raise InvalidGestureError(msg) from e
 
     def _calculate_element_points(self, element):
         """
@@ -121,20 +156,28 @@ class GestureActions:
         Returns:
             A dictionary containing coordinates of various points on the element.
         """
-        x, y = element.location["x"], element.location["y"]
-        width, height = element.size["width"], element.size["height"]
+        try:
+            x, y = element.location["x"], element.location["y"]
+            width, height = element.size["width"], element.size["height"]
 
-        return {
-            "top_left": (x, y),
-            "top_mid": (x + width // 2, y),
-            "top_right": (x + width, y),
-            "left_mid": (x, y + height // 2),
-            "mid": (x + width // 2, y + height // 2),
-            "right_mid": (x + width, y + height // 2),
-            "bottom_left": (x, y + height),
-            "bottom_mid": (x + width // 2, y + height),
-            "bottom_right": (x + width, y + height),
-        }
+            if width <= 0 or height <= 0:
+                raise ElementInteractionError("Invalid element dimensions")
+
+            return {
+                "top_left": (x, y),
+                "top_mid": (x + width // 2, y),
+                "top_right": (x + width, y),
+                "left_mid": (x, y + height // 2),
+                "mid": (x + width // 2, y + height // 2),
+                "right_mid": (x + width, y + height // 2),
+                "bottom_left": (x, y + height),
+                "bottom_mid": (x + width // 2, y + height),
+                "bottom_right": (x + width, y + height),
+            }
+        except Exception as e:
+            msg = f"Failed to calculate element points: {str(e)}"
+            logger.error(msg)
+            raise ElementInteractionError(msg) from e
 
     def _retrieve_element_location(
         self, locator_method: AppiumBy, locator_value: str
@@ -250,53 +293,63 @@ class GestureActions:
             locator_value: The value to use with the locator method.
             direction: The direction to search for the element (UP, DOWN, LEFT, or RIGHT).
         """
-        action = self._create_action()
+        try:
+            action = self._create_action()
 
-        if self._probe_for_element(locator_method, locator_value):
-            element_x, element_y = self._retrieve_element_location(
-                locator_method, locator_value
-            )
+            if self._probe_for_element(locator_method, locator_value):
+                element_x, element_y = self._retrieve_element_location(
+                    locator_method, locator_value
+                )
 
-            if direction in [SeekDirection.UP, SeekDirection.DOWN]:
-                self._swipe_element_into_view_vertical(action, element_y, direction)
-            elif direction in [SeekDirection.LEFT, SeekDirection.RIGHT]:
-                self._swipe_element_into_view_horizontal(action, element_x, direction)
-        else:
-            swipe_actions = {
-                SeekDirection.UP: lambda: self.perform_navigation_partial_y(
-                    action,
-                    self.bounds["upper"],
-                    self.bounds["lower"],
-                    self.scrollable_area["y"] * -0.4,
-                ),
-                SeekDirection.DOWN: lambda: self.perform_navigation_partial_y(
-                    action,
-                    self.bounds["lower"],
-                    self.bounds["upper"],
-                    self.scrollable_area["y"] * 0.4,
-                ),
-                SeekDirection.LEFT: lambda: self.perform_navigation_partial_x(
-                    action,
-                    self.bounds["left"],
-                    self.bounds["right"],
-                    self.scrollable_area["x"] * -0.2,
-                ),
-                SeekDirection.RIGHT: lambda: self.perform_navigation_partial_x(
-                    action,
-                    self.bounds["right"],
-                    self.bounds["left"],
-                    self.scrollable_area["x"] * 0.2,
-                ),
-            }
+                if direction in [SeekDirection.UP, SeekDirection.DOWN]:
+                    self._swipe_element_into_view_vertical(action, element_y, direction)
+                elif direction in [SeekDirection.LEFT, SeekDirection.RIGHT]:
+                    self._swipe_element_into_view_horizontal(
+                        action, element_x, direction
+                    )
+            else:
+                swipe_actions = {
+                    SeekDirection.UP: lambda: self.perform_navigation_partial_y(
+                        action,
+                        self.bounds["upper"],
+                        self.bounds["lower"],
+                        self.scrollable_area["y"] * -0.4,
+                    ),
+                    SeekDirection.DOWN: lambda: self.perform_navigation_partial_y(
+                        action,
+                        self.bounds["lower"],
+                        self.bounds["upper"],
+                        self.scrollable_area["y"] * 0.4,
+                    ),
+                    SeekDirection.LEFT: lambda: self.perform_navigation_partial_x(
+                        action,
+                        self.bounds["left"],
+                        self.bounds["right"],
+                        self.scrollable_area["x"] * -0.2,
+                    ),
+                    SeekDirection.RIGHT: lambda: self.perform_navigation_partial_x(
+                        action,
+                        self.bounds["right"],
+                        self.bounds["left"],
+                        self.scrollable_area["x"] * 0.2,
+                    ),
+                }
 
-            for _ in range(self.probe_attempts):
-                if self._probe_for_element(locator_method, locator_value):
-                    return
-                swipe_actions[direction]()
+                for _ in range(self.probe_attempts):
+                    if self._probe_for_element(locator_method, locator_value):
+                        return
+                    swipe_actions[direction]()
 
-            raise NoSuchElementException(
-                f"Element not found after {self.probe_attempts} attempts"
-            )
+                raise ElementNotInViewError(
+                    f"Element not found after {self.probe_attempts} attempts"
+                )
+
+        except ElementNotInViewError:
+            raise
+        except Exception as e:
+            msg = f"Failed to swipe element into view: {str(e)}"
+            logger.error(msg)
+            raise SwipeError(msg) from e
 
     def _swipe_element_into_view_vertical(
         self, action: ActionChains, element_y: int, direction: SeekDirection
@@ -547,22 +600,28 @@ class GestureActions:
             final_locator_method: The value to use with the target locator method.
             pause_duration: The duration to pause after pressing down on the source element (default is 1.0 seconds).
         """
-        action = self._create_action()
+        try:
+            action = self._create_action()
 
-        initial_element = self.driver.find_element(
-            by=initial_locator_method, value=initial_locator_value
-        )
-        final_element = self.driver.find_element(
-            by=final_locator_method, value=final_locator_value
-        )
+            initial_element = self.driver.find_element(
+                by=initial_locator_method, value=initial_locator_value
+            )
+            final_element = self.driver.find_element(
+                by=final_locator_method, value=final_locator_value
+            )
 
-        initial_points = self._calculate_element_points(initial_element)
-        final_points = self._calculate_element_points(final_element)
+            initial_points = self._calculate_element_points(initial_element)
+            final_points = self._calculate_element_points(final_element)
 
-        self._drag_and_drop(
-            action, initial_points["mid"], final_points["mid"], pause_duration
-        )
-        action.perform()
+            self._drag_and_drop(
+                action, initial_points["mid"], final_points["mid"], pause_duration
+            )
+            action.perform()
+
+        except Exception as e:
+            msg = f"Drag and drop operation failed: {str(e)}"
+            logger.error(msg)
+            raise DragDropError(msg) from e
 
     def _drag_and_drop(
         self,
@@ -587,98 +646,116 @@ class GestureActions:
         action.w3c_actions.pointer_action.pause(pause_duration)
         action.w3c_actions.pointer_action.pointer_up()
 
-    def zoom_in(self, locator_method: AppiumBy, locator_value: str, duration: float = 0.5) -> bool:
+    def zoom_in(
+        self, locator_method: AppiumBy, locator_value: str, duration: float = 0.5
+    ) -> bool:
         """
         Performs a pinch-to-zoom-in gesture on the specified element.
-        
+
         Args:
             locator_method (AppiumBy): The method to locate the element
             locator_value (str): The locator value to find the element
             duration (float, optional): Duration of the zoom animation in seconds
-            
+
         Returns:
             bool: True if zoom in action was successful, False otherwise
         """
-        return self._perform_zoom(locator_method, locator_value, Direction.IN, duration)
+        try:
+            return self._perform_zoom(
+                locator_method, locator_value, Direction.IN, duration
+            )
+        except Exception as e:
+            msg = f"Failed to perform zoom in: {str(e)}"
+            logger.error(msg)
+            raise ZoomError(msg) from e
 
-    def zoom_out(self, locator_method: AppiumBy, locator_value: str, duration: float = 0.5) -> bool:
+    def zoom_out(
+        self, locator_method: AppiumBy, locator_value: str, duration: float = 0.5
+    ) -> bool:
         """
         Performs a pinch-to-zoom-out gesture on the specified element.
-        
+
         Args:
             locator_method (AppiumBy): The method to locate the element
             locator_value (str): The locator value to find the element
             duration (float, optional): Duration of the zoom animation in seconds
-            
+
         Returns:
             bool: True if zoom out action was successful, False otherwise
         """
-        return self._perform_zoom(locator_method, locator_value, Direction.OUT, duration)
+        try:
+            return self._perform_zoom(
+                locator_method, locator_value, Direction.OUT, duration
+            )
+        except Exception as e:
+            msg = f"Failed to perform zoom out: {str(e)}"
+            logger.error(msg)
+            raise ZoomError(msg) from e
 
     def _perform_zoom(
-            self, 
-            locator_method: AppiumBy, 
-            locator_value: str, 
-            direction: Direction,
-            duration: float = 0.5
-        ) -> bool:
-            """
-            Performs a pinch-to-zoom gesture on the specified element.
-            
-            Args:
-                locator_method (AppiumBy): The method to locate the element (e.g., ID, XPATH)
-                locator_value (str): The locator value to find the element
-                direction (Literal["in", "out"]): Direction of zoom - "in" for zoom in, "out" for zoom out
-                duration (float, optional): Duration of the zoom animation in seconds. Defaults to 0.5
-                
-            Returns:
-                bool: True if zoom action was successful, False otherwise
-                
-            Raises:
-                NoSuchElementException: If the target element cannot be found
-                ElementNotInteractableException: If the element is not interactable
-            """
-            try:
-                action = ActionChains(self.driver)
-                
-                element = self.driver.find_element(by=locator_method, value=locator_value)
-                if not element.is_displayed() or not element.is_enabled():
-                    raise ElementNotInteractableException("Element is not interactable")
-                    
-                element_points = self._calculate_element_points(element)
-                
-                if direction == Direction.IN:
-                    pointer_a_start = element_points["mid"]
-                    pointer_b_start = element_points["mid"]
-                    pointer_a_end = self.bounds["upper"]
-                    pointer_b_end = self.bounds["lower"]
-                elif direction == Direction.OUT:
-                    pointer_a_start = self.bounds["upper"]
-                    pointer_b_start = self.bounds["lower"]
-                    pointer_a_end = element_points["mid"]
-                    pointer_b_end = element_points["mid"]
-                
-                pointer_a = action.w3c_actions.add_pointer_input("touch", "pointer_a")
-                pointer_b = action.w3c_actions.add_pointer_input("touch", "pointer_b")
-                
-                pointer_a.create_pointer_move(**pointer_a_start)
-                pointer_b.create_pointer_move(**pointer_b_start)
-                
-                pointer_a.create_pointer_down()
-                pointer_b.create_pointer_down()
-                
-                pointer_a.create_pause(duration * 0.1)
-                pointer_b.create_pause(duration * 0.1)
-                
-                pointer_a.create_pointer_move(duration=duration, **pointer_a_end)
-                pointer_b.create_pointer_move(duration=duration, **pointer_b_end)
-                
-                pointer_a.create_pointer_up()
-                pointer_b.create_pointer_up()
-                
-                action.perform()
-                return True
-                
-            except (NoSuchElementException, ElementNotInteractableException) as e:
-                print(f"Failed to perform zoom {direction} action: {str(e)}")
-                return False
+        self,
+        locator_method: AppiumBy,
+        locator_value: str,
+        direction: Direction,
+        duration: float = 0.5,
+    ) -> bool:
+        """
+        Performs a pinch-to-zoom gesture on the specified element.
+
+        Args:
+            locator_method (AppiumBy): The method to locate the element (e.g., ID, XPATH)
+            locator_value (str): The locator value to find the element
+            direction (Literal["in", "out"]): Direction of zoom - "in" for zoom in, "out" for zoom out
+            duration (float, optional): Duration of the zoom animation in seconds. Defaults to 0.5
+
+        Returns:
+            bool: True if zoom action was successful, False otherwise
+
+        Raises:
+            NoSuchElementException: If the target element cannot be found
+            ElementNotInteractableException: If the element is not interactable
+        """
+        try:
+            action = ActionChains(self.driver)
+
+            element = self.driver.find_element(by=locator_method, value=locator_value)
+            if not element.is_displayed() or not element.is_enabled():
+                raise ElementNotInteractableException("Element is not interactable")
+
+            element_points = self._calculate_element_points(element)
+
+            if direction == Direction.IN:
+                pointer_a_start = element_points["mid"]
+                pointer_b_start = element_points["mid"]
+                pointer_a_end = self.bounds["upper"]
+                pointer_b_end = self.bounds["lower"]
+            elif direction == Direction.OUT:
+                pointer_a_start = self.bounds["upper"]
+                pointer_b_start = self.bounds["lower"]
+                pointer_a_end = element_points["mid"]
+                pointer_b_end = element_points["mid"]
+
+            pointer_a = action.w3c_actions.add_pointer_input("touch", "pointer_a")
+            pointer_b = action.w3c_actions.add_pointer_input("touch", "pointer_b")
+
+            pointer_a.create_pointer_move(**pointer_a_start)
+            pointer_b.create_pointer_move(**pointer_b_start)
+
+            pointer_a.create_pointer_down()
+            pointer_b.create_pointer_down()
+
+            pointer_a.create_pause(duration * 0.1)
+            pointer_b.create_pause(duration * 0.1)
+
+            pointer_a.create_pointer_move(duration=duration, **pointer_a_end)
+            pointer_b.create_pointer_move(duration=duration, **pointer_b_end)
+
+            pointer_a.create_pointer_up()
+            pointer_b.create_pointer_up()
+
+            action.perform()
+            return True
+
+        except (NoSuchElementException, ElementNotInteractableException) as e:
+            print(f"Failed to perform zoom {direction} action: {str(e)}")
+            return False
