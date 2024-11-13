@@ -5,6 +5,7 @@ from selenium.common.exceptions import NoSuchElementException, TimeoutException
 
 from appium.webdriver.common.appiumby import AppiumBy
 from src.appium.gesture.actions import Direction, GestureActions, SeekDirection
+from src.appium.gesture.exceptions import ElementNotInViewError
 
 
 class MockElement:
@@ -89,8 +90,8 @@ def test_swipe_element_into_view_success(swipe_actions):
     assert len(swipe_actions.driver.actions) > 0
 
 
-def test_swipe_element_into_view_not_found(swipe_actions):
-    with pytest.raises(NoSuchElementException):
+def test_swipe_element_not_in_view(swipe_actions):
+    with pytest.raises(ElementNotInViewError):
         swipe_actions.swipe_element_into_view(
             AppiumBy.XPATH, "//non_existing_element", SeekDirection.UP
         )

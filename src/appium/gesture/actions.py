@@ -192,10 +192,15 @@ class GestureActions:
         Returns:
             A tuple containing the x and y coordinates of the element.
         """
-        element = WebDriverWait(self.driver, self.timeout).until(
-            Conditions.presence_of_element_located((locator_method, locator_value))
-        )
-        return element.location["x"], element.location["y"]
+        try:
+            element = WebDriverWait(self.driver, self.timeout).until(
+                Conditions.presence_of_element_located((locator_method, locator_value))
+            )
+            return element.location["x"], element.location["y"]
+        except TimeoutException as e:
+            msg = f"Element not found: {str(e)}"
+            logger.error(msg)
+            raise NoSuchElementException(msg) from e
 
     def _probe_for_element(self, locator_method: AppiumBy, locator_value: str) -> bool:
         """
@@ -211,41 +216,71 @@ class GestureActions:
 
     def swipe_up(self):
         """Perform a full upward swipe of the calculated viewport."""
-        action = self._create_action()
-        self.perform_navigation_full_y(
-            action, self.bounds["lower"], self.bounds["upper"]
-        )
+        try:
+            action = self._create_action()
+            self.perform_navigation_full_y(
+                action, self.bounds["lower"], self.bounds["upper"]
+            )
+        except Exception as e:
+            msg = f"Failed to swipe up: {str(e)}"
+            logger.error(msg)
+            raise SwipeError(msg) from e
 
     def swipe_down(self):
         """Perform a full downward swipe of the calculated viewport."""
-        action = self._create_action()
-        self.perform_navigation_full_y(
-            action, self.bounds["upper"], self.bounds["lower"]
-        )
+        try:
+            action = self._create_action()
+            self.perform_navigation_full_y(
+                action, self.bounds["upper"], self.bounds["lower"]
+            )
+        except Exception as e:
+            msg = f"Failed to swipe down: {str(e)}"
+            logger.error(msg)
+            raise SwipeError(msg) from e
 
     def swipe_left(self):
         """Perform a full leftward swipe of the calculated viewport."""
-        action = self._create_action()
-        self.perform_navigation_full_x(
-            action, self.bounds["right"], self.bounds["left"]
-        )
+        try:
+            action = self._create_action()
+            self.perform_navigation_full_x(
+                action, self.bounds["right"], self.bounds["left"]
+            )
+        except Exception as e:
+            msg = f"Failed to swipe left: {str(e)}"
+            logger.error(msg)
+            raise SwipeError(msg) from e
 
     def swipe_right(self):
         """Perform a full rightward swipe of the calculated viewport."""
-        action = self._create_action()
-        self.perform_navigation_full_x(
-            action, self.bounds["left"], self.bounds["right"]
-        )
+        try:
+            action = self._create_action()
+            self.perform_navigation_full_x(
+                action, self.bounds["left"], self.bounds["right"]
+            )
+        except Exception as e:
+            msg = f"Failed to swipe right: {str(e)}"
+            logger.error(msg)
+            raise SwipeError(msg) from e
 
     def swipe_previous(self):
         """Perform a complete swipe from the left-edge of the viewport, simulating a 'previous page' type swipe."""
-        action = self._create_action()
-        self.perform_navigation_full_x(action, 0, self.viewport_width)
+        try:
+            action = self._create_action()
+            self.perform_navigation_full_x(action, 0, self.viewport_width)
+        except Exception as e:
+            msg = f"Failed to swipe to previous: {str(e)}"
+            logger.error(msg)
+            raise SwipeError(msg) from e
 
     def swipe_next(self):
         """Perform a complete swipe from the right-edge of the viewport, simulating a 'next page' type swipe."""
-        action = self._create_action()
-        self.perform_navigation_full_x(action, self.viewport_width, 0)
+        try:
+            action = self._create_action()
+            self.perform_navigation_full_x(action, self.viewport_width, 0)
+        except Exception as e:
+            msg = f"Failed to swipe to next: {str(e)}"
+            logger.error(msg)
+            raise SwipeError(msg) from e
 
     def swipe_on_element(
         self, locator_method: AppiumBy, locator_value: str, direction: Direction
@@ -258,28 +293,32 @@ class GestureActions:
             locator_value: The value to use with the locator method.
             direction: The direction to swipe (UP, DOWN, LEFT, or RIGHT).
         """
-        action = self._create_action()
-        element = self.driver.find_element(by=locator_method, value=locator_value)
+        try:
+            action = self._create_action()
+            element = self.driver.find_element(by=locator_method, value=locator_value)
+            element_points = self._calculate_element_points(element)
 
-        element_points = self._calculate_element_points(element)
-
-        match direction:
-            case Direction.UP:
-                self.perform_navigation_on_element(
-                    action, element_points["bottom_mid"], element_points["top_mid"]
-                )
-            case Direction.DOWN:
-                self.perform_navigation_on_element(
-                    action, element_points["top_mid"], element_points["bottom_mid"]
-                )
-            case Direction.RIGHT:
-                self.perform_navigation_on_element(
-                    action, element_points["left_mid"], element_points["right_mid"]
-                )
-            case Direction.LEFT:
-                self.perform_navigation_on_element(
-                    action, element_points["right_mid"], element_points["left_mid"]
-                )
+            match direction:
+                case Direction.UP:
+                    self.perform_navigation_on_element(
+                        action, element_points["bottom_mid"], element_points["top_mid"]
+                    )
+                case Direction.DOWN:
+                    self.perform_navigation_on_element(
+                        action, element_points["top_mid"], element_points["bottom_mid"]
+                    )
+                case Direction.RIGHT:
+                    self.perform_navigation_on_element(
+                        action, element_points["left_mid"], element_points["right_mid"]
+                    )
+                case Direction.LEFT:
+                    self.perform_navigation_on_element(
+                        action, element_points["right_mid"], element_points["left_mid"]
+                    )
+        except Exception as e:
+            msg = f"Failed to swipe on element: {str(e)}"
+            logger.error(msg)
+            raise SwipeError(msg) from e
 
     def swipe_element_into_view(
         self, locator_method: AppiumBy, locator_value: str, direction: SeekDirection
@@ -362,22 +401,28 @@ class GestureActions:
             element_y: The y-coordinate of the element to bring into view.
             The direction to search for the element (UP or DOWN).
         """
-        distance_to_element = element_y - self.bounds["lower"]
-        actions_total = distance_to_element / self.scrollable_area["y"]
-        actions_complete = int(distance_to_element // self.scrollable_area["y"])
-        actions_partial = int(
-            self.scrollable_area["y"] * (actions_total - actions_complete)
-        )
+        try:
+            distance_to_element = element_y - self.bounds["lower"]
+            actions_total = distance_to_element / self.scrollable_area["y"]
+            actions_complete = int(distance_to_element // self.scrollable_area["y"])
+            actions_partial = int(
+                self.scrollable_area["y"] * (actions_total - actions_complete)
+            )
 
-        if direction == SeekDirection.UP:
-            start, end = self.bounds["upper"], self.bounds["lower"]
-        else:
-            start, end = self.bounds["lower"], self.bounds["upper"]
+            if direction == SeekDirection.UP:
+                start, end = self.bounds["upper"], self.bounds["lower"]
+            else:
+                start, end = self.bounds["lower"], self.bounds["upper"]
 
-        if actions_total > 1:
-            self.perform_navigation_full_y(action, start, end, actions_complete)
-        if actions_partial > 50:
-            self.perform_navigation_partial_y(action, start, end, actions_partial)
+            if actions_total > 1:
+                self.perform_navigation_full_y(action, start, end, actions_complete)
+            if actions_partial > 50:
+                self.perform_navigation_partial_y(action, start, end, actions_partial)
+
+        except Exception as e:
+            msg = f"Failed to swipe element into view vertically: {str(e)}"
+            logger.error(msg)
+            raise SwipeError(msg) from e
 
     def _swipe_element_into_view_horizontal(
         self, action: ActionChains, element_x: int, direction: Direction
@@ -390,22 +435,28 @@ class GestureActions:
             element_x: The x-coordinate of the element to bring into view.
             The direction to search for the element (LEFT or RIGHT)
         """
-        distance_to_element = element_x - self.bounds["left"]
-        actions_total = distance_to_element / self.scrollable_area["x"]
-        actions_complete = int(distance_to_element // self.scrollable_area["x"])
-        actions_partial = int(
-            self.scrollable_area["x"] * (actions_total - actions_complete)
-        )
+        try:
+            distance_to_element = element_x - self.bounds["left"]
+            actions_total = distance_to_element / self.scrollable_area["x"]
+            actions_complete = int(distance_to_element // self.scrollable_area["x"])
+            actions_partial = int(
+                self.scrollable_area["x"] * (actions_total - actions_complete)
+            )
 
-        if direction == Direction.LEFT:
-            start, end = self.bounds["right"], self.bounds["left"]
-        else:
-            start, end = self.bounds["left"], self.bounds["right"]
+            if direction == Direction.LEFT:
+                start, end = self.bounds["right"], self.bounds["left"]
+            else:
+                start, end = self.bounds["left"], self.bounds["right"]
 
-        if actions_total > 1:
-            self.perform_navigation_full_x(action, start, end, actions_complete)
-        if actions_partial > 50:
-            self.perform_navigation_partial_x(action, start, end, actions_partial)
+            if actions_total > 1:
+                self.perform_navigation_full_x(action, start, end, actions_complete)
+            if actions_partial > 50:
+                self.perform_navigation_partial_x(action, start, end, actions_partial)
+
+        except Exception as e:
+            msg = f"Failed to swipe element into view horizontally: {str(e)}"
+            logger.error(msg)
+            raise SwipeError(msg) from e
 
     def perform_navigation_full_y(
         self,
@@ -423,13 +474,18 @@ class GestureActions:
             final_bound: The ending y-coordinate.
             iterations: The number of times to perform the swipe (default is 1).
         """
-        for _ in range(iterations):
-            self._perform_swipe(
-                action,
-                (self.viewport_x_mid_point, initial_bound),
-                (self.viewport_x_mid_point, final_bound),
-            )
-            action.perform()
+        try:
+            for _ in range(iterations):
+                self._perform_swipe(
+                    action,
+                    (self.viewport_x_mid_point, initial_bound),
+                    (self.viewport_x_mid_point, final_bound),
+                )
+                action.perform()
+        except Exception as e:
+            msg = f"Failed to perform full vertical navigation: {str(e)}"
+            logger.error(msg)
+            raise SwipeError(msg) from e
 
     def perform_navigation_partial_y(
         self,
@@ -446,12 +502,17 @@ class GestureActions:
             initial_bound: The starting y-coordinate.
             partial_percentage: The percentage of the full swipe to perform.
         """
-        self._perform_swipe(
-            action,
-            (self.viewport_x_mid_point, initial_bound),
-            (self.viewport_x_mid_point, final_bound + partial_percentage),
-        )
-        action.perform()
+        try:
+            self._perform_swipe(
+                action,
+                (self.viewport_x_mid_point, initial_bound),
+                (self.viewport_x_mid_point, final_bound + partial_percentage),
+            )
+            action.perform()
+        except Exception as e:
+            msg = f"Failed to perform partial vertical navigation: {str(e)}"
+            logger.error(msg)
+            raise SwipeError(msg) from e
 
     def perform_navigation_full_x(
         self,
@@ -469,13 +530,18 @@ class GestureActions:
             final_bound: The ending x-coordinate.
             iterations: The number of times to perform the swipe (default is 1).
         """
-        for _ in range(iterations):
-            self._perform_swipe(
-                action,
-                (initial_bound, self.viewport_y_mid_point),
-                (final_bound, self.viewport_y_mid_point),
-            )
-            action.perform()
+        try:
+            for _ in range(iterations):
+                self._perform_swipe(
+                    action,
+                    (initial_bound, self.viewport_y_mid_point),
+                    (final_bound, self.viewport_y_mid_point),
+                )
+                action.perform()
+        except Exception as e:
+            msg = f"Failed to perform full horizontal navigation: {str(e)}"
+            logger.error(msg)
+            raise SwipeError(msg) from e
 
     def perform_navigation_partial_x(
         self,
@@ -492,12 +558,17 @@ class GestureActions:
             initial_bound: The starting x-coordinate.
             partial_percentage: The percentage of the full swipe to perform.
         """
-        self._perform_swipe(
-            action,
-            (initial_bound, self.viewport_y_mid_point),
-            (final_bound + partial_percentage, self.viewport_y_mid_point),
-        )
-        action.perform()
+        try:
+            self._perform_swipe(
+                action,
+                (initial_bound, self.viewport_y_mid_point),
+                (final_bound + partial_percentage, self.viewport_y_mid_point),
+            )
+            action.perform()
+        except Exception as e:
+            msg = f"Failed to perform partial horizontal navigation: {str(e)}"
+            logger.error(msg)
+            raise SwipeError(msg) from e
 
     def perform_navigation_on_element(
         self,
@@ -513,8 +584,13 @@ class GestureActions:
             initial_bound: The starting coordinates (x, y).
             final_bound: The ending coordinates (x, y).
         """
-        self._perform_swipe(action, initial_bound, final_bound)
-        action.perform()
+        try:
+            self._perform_swipe(action, initial_bound, final_bound)
+            action.perform()
+        except Exception as e:
+            msg = f"Failed to perform navigation on element: {str(e)}"
+            logger.error(msg)
+            raise SwipeError(msg) from e
 
     def _perform_swipe(
         self, action: ActionChains, start: tuple[int, int], end: tuple[int, int]
@@ -527,23 +603,38 @@ class GestureActions:
             start: The starting coordinates (x, y).
             end: The ending coordinates (x, y).
         """
-        action.w3c_actions.pointer_action.move_to_location(*start)
-        action.w3c_actions.pointer_action.pointer_down()
-        action.w3c_actions.pointer_action.move_to_location(*end)
-        action.w3c_actions.pointer_action.pause(0.5)
-        action.w3c_actions.pointer_action.release()
+        try:
+            action.w3c_actions.pointer_action.move_to_location(*start)
+            action.w3c_actions.pointer_action.pointer_down()
+            action.w3c_actions.pointer_action.move_to_location(*end)
+            action.w3c_actions.pointer_action.pause(0.5)
+            action.w3c_actions.pointer_action.release()
+        except Exception as e:
+            msg = f"Failed to perform swipe action: {str(e)}"
+            logger.error(msg)
+            raise SwipeError(msg) from e
 
     def double_tap(self, locator_method: AppiumBy, locator_value: str):
         """
         Perform a double tap on the specified element using its locator.
         """
-        self._tap_on_element(locator_method, locator_value, iterations=2)
+        try:
+            self._tap_on_element(locator_method, locator_value, iterations=2)
+        except Exception as e:
+            msg = f"Failed to perform double tap: {str(e)}"
+            logger.error(msg)
+            raise SwipeError(msg) from e
 
     def triple_tap(self, locator_method: AppiumBy, locator_value: str):
         """
         Perform a triple tap on the specified element using its locator.
         """
-        self._tap_on_element(locator_method, locator_value, iterations=3)
+        try:
+            self._tap_on_element(locator_method, locator_value, iterations=3)
+        except Exception as e:
+            msg = f"Failed to perform triple tap: {str(e)}"
+            logger.error(msg)
+            raise SwipeError(msg) from e
 
     def long_press(
         self, locator_method: AppiumBy, locator_value: str, duration: float = 0.5
@@ -553,7 +644,12 @@ class GestureActions:
 
         Android and iOS share a default duration of 0.5.
         """
-        self._tap_on_element(locator_method, locator_value, duration=duration)
+        try:
+            self._tap_on_element(locator_method, locator_value, duration=duration)
+        except Exception as e:
+            msg = f"Failed to perform long press: {str(e)}"
+            logger.error(msg)
+            raise SwipeError(msg) from e
 
     def _tap_on_element(
         self,
@@ -571,14 +667,22 @@ class GestureActions:
             iterations: The number of times to perform the tap.
         """
         action = self._create_action()
-        element = self.driver.find_element(by=locator_method, value=locator_value)
-        element_points = self._calculate_element_points(element)
-        for _ in range(iterations):
-            action.w3c_actions.pointer_action.move_to_location(*element_points["mid"])
-            action.w3c_actions.pointer_action.pointer_down()
-            action.w3c_actions.pointer_action.pause(duration)
-            action.w3c_actions.pointer_action.release()
-        action.perform()
+        try:
+            element = self.driver.find_element(by=locator_method, value=locator_value)
+            element_points = self._calculate_element_points(element)
+
+            for _ in range(iterations):
+                action.w3c_actions.pointer_action.move_to_location(
+                    *element_points["mid"]
+                )
+                action.w3c_actions.pointer_action.pointer_down()
+                action.w3c_actions.pointer_action.pause(duration)
+                action.w3c_actions.pointer_action.release()
+            action.perform()
+        except Exception as e:
+            msg = f"Failed to tap on element: {str(e)}"
+            logger.error(msg)
+            raise ElementInteractionError(msg) from e
 
     def drag_and_drop(
         self,
@@ -639,12 +743,17 @@ class GestureActions:
             final_point: The ending coordinates (x, y) to which to drop.
             pause_duration: The duration to pause after pressing the pointer down.
         """
-        action.w3c_actions.pointer_action.move_to_location(*initial_point)
-        action.w3c_actions.pointer_action.pointer_down()
-        action.w3c_actions.pointer_action.pause(pause_duration)
-        action.w3c_actions.pointer_action.move_to_location(*final_point)
-        action.w3c_actions.pointer_action.pause(pause_duration)
-        action.w3c_actions.pointer_action.pointer_up()
+        try:
+            action.w3c_actions.pointer_action.move_to_location(*initial_point)
+            action.w3c_actions.pointer_action.pointer_down()
+            action.w3c_actions.pointer_action.pause(pause_duration)
+            action.w3c_actions.pointer_action.move_to_location(*final_point)
+            action.w3c_actions.pointer_action.pause(pause_duration)
+            action.w3c_actions.pointer_action.pointer_up()
+        except Exception as e:
+            msg = f"Failed to perform drag and drop action: {str(e)}"
+            logger.error(msg)
+            raise DragDropError(msg) from e
 
     def zoom_in(
         self, locator_method: AppiumBy, locator_value: str, duration: float = 0.5
