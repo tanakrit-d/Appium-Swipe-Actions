@@ -15,9 +15,9 @@ The purpose of this library is to provide a number gesture/interaction functions
 - [x] double_tap()
 - [x] triple_tap()
 - [x] long_press()
+- [x] drag_drop()
 - [x] zoom_in()
 - [x] zoom_out()
-- [x] drag_drop()
 
 ## Compatibility
 
@@ -39,6 +39,7 @@ uv add appium-gesture-actions
 ```md
 ## 0.2.0 (2024-MM-DD)
 
+- Renamed package
 - Added a number of new gestures
   - Double Tap
   - Triple Tap
@@ -47,6 +48,7 @@ uv add appium-gesture-actions
   - Zoom In
   - Zoom Out
 - Added error handling
+- Added more tests 😭
 - Verified iOS compatibility
 - Changed to uv for packaging
 ```
@@ -56,7 +58,8 @@ See full list of changes: [CHANGES.md](./CHANGES.md)
 ## To-do
 
 - [x] Expand functionality to include gestures
-- [ ] Robust error handling
+- [x] Robust error handling
+- [ ] Add examples for other gestures
 - [ ] Remove direct accessing of `ActionBuilder`
 - [ ] Return bool for most functions
 - [ ] Handling of different orientations
