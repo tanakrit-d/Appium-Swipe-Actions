@@ -19,6 +19,8 @@ The purpose of this library is to provide a number gesture/interaction functions
 - [x] zoom_in()
 - [x] zoom_out()
 
+[Documentation](https://tanakrit-d.github.io/appium-swipe-actions/appium/gesture.html)
+
 ## Compatibility
 
 - [x] Android  
