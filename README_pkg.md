@@ -1,58 +1,87 @@
-# Appium Enhanced Swipe Actions Library
+# Appium Gestures Library
 
-The purpose of this library is to provide more robust and useful swiping/scrolling functionality for Appium mobile automation.  
-It currently only targets use with Android, and has not been tested against iOS.
+The purpose of this library is to provide a number gesture/interaction functions for Appium mobile automation.  
+
+## Available Functions
+
+- [x] swipe_up()
+- [x] swipe_down()
+- [x] swipe_left()
+- [x] swipe_right()
+- [x] swipe_next()
+- [x] swipe_previous()
+- [x] swipe_on_element()
+- [x] swipe_element_into_view()
+- [x] double_tap()
+- [x] triple_tap()
+- [x] long_press()
+- [x] drag_drop()
+- [x] zoom_in()
+- [x] zoom_out()
+
+## Compatibility
+
+- [x] Android  
+  Requires: `appium driver install uiautomator2`
+- [ ] iOS (unverified)  
+  Requires: `appium driver install xcuitest`
 
 ## Install
 
 ```bash
-pip install appium-swipe-actions
+pip install appium-gesture-actions
 # or
-uv add appium-swipe-actions
+uv add appium-gesture-actions
 ```
 
 ### Changelog
 
 ```md
-## 0.1.3 (2024-09-04)
-- Updated import strategy, the structure is now:  
-    ```python
-    from appium.swipe.actions import SwipeActions, SeekDirection, Direction
-    ```
-- Changed to ruff for linting/formatting
-- Changed to rye for packaging
+## 0.2.0 (2024-11-14)
+
+- Renamed package
+- Added a number of new gestures
+  - Double Tap
+  - Triple Tap
+  - Long Press
+  - Drag and Drop
+  - Zoom In
+  - Zoom Out
+- Added error handling
+- Added more tests 😭
+- Verified iOS compatibility
+- Added API docs
+- Changed to uv for packaging
 ```
 
 See full list of changes: [CHANGES.md](https://github.com/Tanakrit-D/Appium-Swipe-Actions/raw/main/CHANGES.md)
 
-## Available Methods
+## To-do
 
-```python
-swipe_up()
-swipe_down()
-swipe_left()
-swipe_right()
-swipe_next()
-swipe_previous()
-swipe_on_element()
-swipe_element_into_view()
-```
+- [x] Expand functionality to include gestures
+- [x] Robust error handling
+- [x] Add documentation
+- [ ] Add examples for other gestures
+- [ ] Remove direct accessing of `ActionBuilder`
+- [ ] Return bool for most functions
+- [ ] Handling of different orientations
+- [ ] Allow for re-initialisation of viewport calculations
 
 ## Demo and Example Usage
 
 ![Library Demo](https://github.com/Tanakrit-D/Appium-Swipe-Actions/raw/main/demo/example.gif)
 
 ```python
-from appium.swipe.actions import SwipeActions, SeekDirection, Direction
+from appium.gesture.actions import GestureActions, SeekDirection, Direction
 
 class TestDemo(TestCore):
     def test_element_search(self):
-        swipe = SwipeActions(self.driver)
+        gesture = GestureActions(self.driver)
         self.driver.find_element(
             by=AppiumBy.ANDROID_UIAUTOMATOR,
             value='new UiSelector().className("android.widget.Button")',
         ).click()
-        swipe.swipe_element_into_view(
+        gesture.swipe_element_into_view(
             AppiumBy.ANDROID_UIAUTOMATOR,
             'new UiSelector().descriptionContains("Day planted")',
             SeekDirection.DOWN,
@@ -113,21 +142,25 @@ An example of this is available here: [demo/calc_coordinates.py](https://raw.git
 
 ### Swipe Element Into View
 
-The method `swipe_element_into_view()` contains the helper `_probe_for_element()`.  
+The method `swipe_element_into_view()` calls the helper `_probe_for_element()`.  
 This is because in the event an element is not loaded into the DOM yet or the driver context is NATIVE - it will not be able to locate the element.  
 Instead, it will start calling `perform_navigation_partial_()` and seek the element for a set number of attempts.  
 This can be set/overwritten when initialising the class with the `**kwargs("probe_attempts")`.
 
 Additionally, the `if actions_partial > 50:` ensures the pixel distance is large enough to warrant an action.  
-If it is less than 50px, the swipe action will be interpreted by the OS as a double-tap.
+When this value is less than 50px, the swipe action will be interpreted by the OS as a double-tap.
 
 ### Wait/Expected Conditions
 
 The library will not wait for the elements to be visible before interacting with them (such as `swipe_on_element()`).  
-Ensure you implement this yourself.
+Ensure you implement this yourself before calling a gesture action on an element.
 
 ### Debugging
 
 #### Android
 
 If you would like to see the pointer interactions and coordinates, this can be enabled on a device level in `Settings > Developer Options > Pointer location`
+
+## Acknowledgements
+
+- [mmonfared](https://github.com/mmonfared) for his blog on writing a zoom function

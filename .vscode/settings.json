@@ -1,4 +1,14 @@
 {
+    "python.analysis.extraPaths": [
+        "${workspaceFolder}",
+        "${workspaceFolder}/src",
+        "${workspaceFolder}/utils"
+    ],
+    "python.autoComplete.extraPaths": [
+        "${workspaceFolder}",
+        "${workspaceFolder}/src",
+        "${workspaceFolder}/utils"
+    ],
     "python.testing.pytestArgs": [
         "tests"
     ],

@@ -37,7 +37,7 @@ uv add appium-gesture-actions
 ### Changelog
 
 ```md
-## 0.2.0 (2024-MM-DD)
+## 0.2.0 (2024-11-14)
 
 - Renamed package
 - Added a number of new gestures
@@ -50,15 +50,17 @@ uv add appium-gesture-actions
 - Added error handling
 - Added more tests 😭
 - Verified iOS compatibility
+- Added API docs
 - Changed to uv for packaging
 ```
 
-See full list of changes: [CHANGES.md](./CHANGES.md)
+See full list of changes: [CHANGES.md](https://github.com/Tanakrit-D/Appium-Swipe-Actions/raw/main/CHANGES.md)
 
 ## To-do
 
 - [x] Expand functionality to include gestures
 - [x] Robust error handling
+- [x] Add documentation
 - [ ] Add examples for other gestures
 - [ ] Remove direct accessing of `ActionBuilder`
 - [ ] Return bool for most functions
@@ -67,7 +69,7 @@ See full list of changes: [CHANGES.md](./CHANGES.md)
 
 ## Demo and Example Usage
 
-![Library Demo](demo/example.gif)
+![Library Demo](https://github.com/Tanakrit-D/Appium-Swipe-Actions/raw/main/demo/example.gif)
 
 ```python
 from appium.gesture.actions import GestureActions, SeekDirection, Direction
@@ -92,7 +94,7 @@ This library divides the viewport into four bounds: upper, lower, left, and righ
 Using these bounds, we then define a 'scrollable region'. We can then perform our scroll/swipe actions within this space.  
 The impetus for this is to recreate scrolling/swiping behaviour more similar to a user and avoid hardcoding co-ordinates.  
 Additionally, it avoids the automation attempting to perform actions on top of elements (such as headers or footers).  
-![Viewport Diagram](resources/viewport_scrollable_bounds.png)
+![Viewport Diagram](https://github.com/Tanakrit-D/Appium-Swipe-Actions/raw/main/resources/viewport_scrollable_bounds.png)
 
 ## Defining Element Points
 
@@ -102,7 +104,7 @@ For the purpose of this library, we are only concerned with two attributes of an
 The element's co-ordinates within the viewport is considered the top-left-point.
 
 We can then use the element size to determine where it occupies relative to the view-port position.
-![Element Diagram](resources/understanding_element_position-dimension.png)
+![Element Diagram](https://github.com/Tanakrit-D/Appium-Swipe-Actions/raw/main/resources/understanding_element_position-dimension.png)
 
 ```python
 top_left_point      = element.location["x"], element.location["y"]
@@ -134,7 +136,7 @@ Bottom-Mid-Point:  (40, 40)
 Bottom-Right-Point:  (60, 40)
 ```
 
-An example of this is available here: [demo/calc_coordinates.py](demo/calc_coordinates.py)
+An example of this is available here: [demo/calc_coordinates.py](https://raw.githubusercontent.com/Tanakrit-D/Appium-Swipe-Actions/blob/main/demo/calc_coordinates.py)
 
 ## Notes
 

@@ -112,7 +112,7 @@ class GestureActions:
             logger.error(msg)
             raise ViewportError(msg) from e
 
-    def _set_boundaries_and_scrollable_area(self):
+    def _set_boundaries_and_scrollable_area(self) -> None:
         """
         Calculate scrolling boundaries and scrollable area based on crop factors.
         """
@@ -146,7 +146,7 @@ class GestureActions:
             logger.error(msg)
             raise InvalidGestureError(msg) from e
 
-    def _calculate_element_points(self, element):
+    def _calculate_element_points(self, element) -> dict[str, tuple[int, int]]:
         """
         Calculate various points on an element.
 
@@ -214,7 +214,7 @@ class GestureActions:
         except (NoSuchElementException, TimeoutException):
             return False
 
-    def swipe_up(self):
+    def swipe_up(self) -> None:
         """Perform a full upward swipe of the calculated viewport."""
         try:
             action = self._create_action()
@@ -226,7 +226,7 @@ class GestureActions:
             logger.error(msg)
             raise SwipeError(msg) from e
 
-    def swipe_down(self):
+    def swipe_down(self) -> None:
         """Perform a full downward swipe of the calculated viewport."""
         try:
             action = self._create_action()
@@ -238,7 +238,7 @@ class GestureActions:
             logger.error(msg)
             raise SwipeError(msg) from e
 
-    def swipe_left(self):
+    def swipe_left(self) -> None:
         """Perform a full leftward swipe of the calculated viewport."""
         try:
             action = self._create_action()
@@ -250,7 +250,7 @@ class GestureActions:
             logger.error(msg)
             raise SwipeError(msg) from e
 
-    def swipe_right(self):
+    def swipe_right(self) -> None:
         """Perform a full rightward swipe of the calculated viewport."""
         try:
             action = self._create_action()
@@ -262,7 +262,7 @@ class GestureActions:
             logger.error(msg)
             raise SwipeError(msg) from e
 
-    def swipe_previous(self):
+    def swipe_previous(self) -> None:
         """Perform a complete swipe from the left-edge of the viewport, simulating a 'previous page' type swipe."""
         try:
             action = self._create_action()
@@ -272,7 +272,7 @@ class GestureActions:
             logger.error(msg)
             raise SwipeError(msg) from e
 
-    def swipe_next(self):
+    def swipe_next(self) -> None:
         """Perform a complete swipe from the right-edge of the viewport, simulating a 'next page' type swipe."""
         try:
             action = self._create_action()
@@ -284,7 +284,7 @@ class GestureActions:
 
     def swipe_on_element(
         self, locator_method: AppiumBy, locator_value: str, direction: Direction
-    ):
+    ) -> None:
         """
         Swipe on a specific element in the given direction.
 
@@ -322,7 +322,7 @@ class GestureActions:
 
     def swipe_element_into_view(
         self, locator_method: AppiumBy, locator_value: str, direction: SeekDirection
-    ):
+    ) -> None:
         """
         Swipe to bring an element into view.
         The multipliers in `swipe_actions` method scale the percentage factor for swipe for the partial_percentage argument.
@@ -392,7 +392,7 @@ class GestureActions:
 
     def _swipe_element_into_view_vertical(
         self, action: ActionChains, element_y: int, direction: SeekDirection
-    ):
+    ) -> None:
         """
         Perform vertical swipes to bring an element into view.
 
@@ -426,7 +426,7 @@ class GestureActions:
 
     def _swipe_element_into_view_horizontal(
         self, action: ActionChains, element_x: int, direction: Direction
-    ):
+    ) -> None:
         """
         Perform horizontal swipes to bring an element into view.
 
@@ -464,7 +464,7 @@ class GestureActions:
         initial_bound: int,
         final_bound: int,
         iterations: int = 1,
-    ):
+    ) -> None:
         """
         Perform full vertical navigation swipes.
 
@@ -493,7 +493,7 @@ class GestureActions:
         initial_bound: int,
         final_bound: int,
         partial_percentage: int,
-    ):
+    ) -> None:
         """
         Perform a partial vertical navigation swipe.
 
@@ -520,7 +520,7 @@ class GestureActions:
         initial_bound: int,
         final_bound: int,
         iterations: int = 1,
-    ):
+    ) -> None:
         """
         Perform full horizontal navigation swipes.
 
@@ -549,7 +549,7 @@ class GestureActions:
         initial_bound: int,
         final_bound: int,
         partial_percentage: int,
-    ):
+    ) -> None:
         """
         Perform a partial horizontal navigation swipe.
 
@@ -575,7 +575,7 @@ class GestureActions:
         action: ActionChains,
         initial_bound: tuple[int, int],
         final_bound: tuple[int, int],
-    ):
+    ) -> None:
         """
         Perform a navigation swipe on a specific element.
 
@@ -594,7 +594,7 @@ class GestureActions:
 
     def _perform_swipe(
         self, action: ActionChains, start: tuple[int, int], end: tuple[int, int]
-    ):
+    ) -> None:
         """
         Perform a swipe action from start to end coordinates.
 
@@ -614,7 +614,7 @@ class GestureActions:
             logger.error(msg)
             raise SwipeError(msg) from e
 
-    def double_tap(self, locator_method: AppiumBy, locator_value: str):
+    def double_tap(self, locator_method: AppiumBy, locator_value: str) -> None:
         """
         Perform a double tap on the specified element using its locator.
         """
@@ -625,7 +625,7 @@ class GestureActions:
             logger.error(msg)
             raise SwipeError(msg) from e
 
-    def triple_tap(self, locator_method: AppiumBy, locator_value: str):
+    def triple_tap(self, locator_method: AppiumBy, locator_value: str) -> None:
         """
         Perform a triple tap on the specified element using its locator.
         """
@@ -638,7 +638,7 @@ class GestureActions:
 
     def long_press(
         self, locator_method: AppiumBy, locator_value: str, duration: float = 0.5
-    ):
+    ) -> None:
         """
         Perform a long press on the specified element using its locator.
 
@@ -657,7 +657,7 @@ class GestureActions:
         locator_value: str,
         duration: float = 0.1,
         iterations: int = 1,
-    ):
+    ) -> None:
         """
         Helper method to tap on a specified element a given number of times.
 
@@ -691,7 +691,7 @@ class GestureActions:
         final_locator_method: AppiumBy,
         final_locator_value: str,
         pause_duration: float = 1.0,
-    ):
+    ) -> None:
         """
         Perform a drag and drop action from the source element to the target element.
 
@@ -733,7 +733,7 @@ class GestureActions:
         initial_point: tuple[int, int],
         final_point: tuple[int, int],
         pause_duration: float = 1.0,
-    ):
+    ) -> None:
         """
         Perform a drag and drop action from start to end points.
 
