@@ -115,7 +115,7 @@ class TestDemo(TestCore):
 
         # Scroll to Element (Android)
         action.swipe.element_into_view(
-            value_a='\"Save\"',
+            value_a='"Save"',
             locator_method_a=AppiumBy.ANDROID_UIAUTOMATOR,
             ui_selector=UiSelector.DESC
         )
@@ -233,7 +233,7 @@ I would recommend reading the following documentation which helped inform the de
 
 - [Appium XCUITest Driver](https://appium.github.io/appium-xcuitest-driver/latest/reference/execute-methods/)
   - [NSPredicate Cheatsheet](http://realm.io.s3-website-us-east-1.amazonaws.com/assets/downloads/NSPredicateCheatsheet.pdf)
-- [Appium UiAutomator 2 Driver](https://github.com/appium/appium-uiautomator2-driver/blob/master/docs/android-mobile-gestures.md)
+- [Appium UiAutomator2 Driver](https://github.com/appium/appium-uiautomator2-driver/blob/master/docs/android-mobile-gestures.md)
   - [Android Developer Reference: UiScrollable](https://developer.android.com/reference/androidx/test/uiautomator/UiScrollable)
   - [Android Developer Reference: UiSelector](https://developer.android.com/reference/androidx/test/uiautomator/UiSelector)
 - [Appium Swipe Tutorial](https://appium.github.io/appium.io/docs/en/writing-running-appium/tutorial/swipe-tutorial/)
