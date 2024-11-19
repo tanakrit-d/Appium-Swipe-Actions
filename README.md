@@ -126,7 +126,7 @@ class TestDemo(TestCore):
 
 ## An Explainer on Swipe Element Into View
 
-This function (part of the `SwipeGestures` class) has cross-platform support.  
+This function (part of the [SwipeGestures](https://github.com/tanakrit-d/appium-gesture-actions/blob/ae1d229d14ced2a20169982d6284fcf7ed92c22b/src/appium/gesture/swipe.py#L45) class) has cross-platform support.  
 It is achieved by using parameters with different suffixes (`_a` and `_i` for Android and iOS respectively) and support for `**kwargs`.  
 
 This will allow you to use a single functional call for use on both platforms.
@@ -147,6 +147,7 @@ Additionally, the `if actions_partial > SWIPE_ACTION_THRESHOLD` check ensures th
 When this value is less than 50px, the swipe action will be interpreted by the OS as a double-tap.
 
 Please look at `_fallback_scroll_to_element` if you'd like to learn more.
+https://github.com/tanakrit-d/appium-gesture-actions/blob/ae1d229d14ced2a20169982d6284fcf7ed92c22b/src/appium/gesture/swipe.py#L176
 
 ## Defining a Scrollable Region
 
@@ -196,7 +197,7 @@ Bottom-Mid-Point:  (40, 40)
 Bottom-Right-Point:  (60, 40)
 ```
 
-An example of this is available here: [demo/calc_coordinates.py](https://raw.githubusercontent.com/tanakrit-d/appium-gesture-actions/blob/main/demo/calc_coordinates.py)
+An example of this is available here: [demo/calc_coordinates.py](https://github.com/tanakrit-d/appium-gesture-actions/blob/dc16c82864212b68ee55c79540518810e5a4ee5a/demo/calc_coordinates.py)
 
 ## Notes
 
