@@ -10,8 +10,7 @@ keywords = [
     "gestures",
     "swipe",
     "scroll",
-    "double tap",
-    "triple tap",
+    "pinch",
     "zoom",
     "drag and drop",
 ]
