@@ -2,7 +2,7 @@
 name = "appium-gesture-actions"
 version = "0.2.0"
 description = "Gesture actions library for Appium"
-readme = "README_pkg.md"
+readme = "README.md"
 requires-python = ">=3.9"
 keywords = [
     "appium",

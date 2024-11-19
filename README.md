@@ -3,7 +3,7 @@
 This library is to provide a number gesture/interaction functions for Appium mobile automation.  
 The gestures are platform agnostic, which allows the user to provide a WebElement - or locators for both Android and iOS in the same function call.  
 
-**Note:** This documentation is for the upcoming v0.2.0 release.
+**Note:** This documentation is for the upcoming v0.2.0 release. It is available on [TestPyPi](https://test.pypi.org/project/appium-gesture-actions/0.2.0/)
 
 ## Available Functions
 
