@@ -79,6 +79,7 @@ See full list of changes: [CHANGES.md](https://github.com/tanakrit-d/appium-gest
 - [ ] Remove direct accessing of `ActionBuilder` - or not..
 - [ ] Handling of different orientations
 - [ ] Allow for re-initialisation of viewport calculations
+- [ ] Reduce minimum Python version
 
 ## Demo and Example Usage
 
