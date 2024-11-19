@@ -31,6 +31,8 @@ The gestures are platform agnostic, which allows the user to provide a WebElemen
 
 [Documentation](https://tanakrit-d.github.io/appium-gesture-actions/index.html)
 
+-----
+
 ## Compatibility
 
 - [x] Android  
