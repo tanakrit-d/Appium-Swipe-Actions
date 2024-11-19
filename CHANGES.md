@@ -1,18 +1,15 @@
 # Changelog
 
-## 0.2.0 (2024-11-14)
+## 0.2.0 (2024-11-XX)
 
 - Renamed package
+- Complete re-write of functionality
+- Added platform-specific code
 - Added a number of new gestures
-  - Double Tap
-  - Triple Tap
-  - Long Press
   - Drag and Drop
   - Zoom In
   - Zoom Out
 - Added error handling
-- Added more tests 😭
-- Verified iOS compatibility
 - Added API docs
 - Changed to uv for packaging
 
