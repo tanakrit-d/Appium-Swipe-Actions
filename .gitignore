@@ -147,3 +147,6 @@ cython_debug/
 # OS Specific
 .DS_Store
 **/.DS_Store
+
+# Ruff
+.ruff_cache
