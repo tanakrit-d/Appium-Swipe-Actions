@@ -88,6 +88,7 @@ See full list of changes: [CHANGES.md](https://github.com/tanakrit-d/appium-gest
 
 ```python
 from appium.gesture.actions import GestureActions, SeekDirection
+from appium.gesture.enums import SeekDirection, UiSelector
 
 class TestDemo(TestCore):
     def test_cool_stuff(self):
@@ -112,10 +113,11 @@ class TestDemo(TestCore):
         # Pinch
         action.pinch.open(image_element)
 
-        # Scroll to Element
+        # Scroll to Element (Android)
         action.swipe.element_into_view(
-            value_a='new UiSelector().className("android.widget.EditText").instance(0)',
+            value_a='\"Save\"',
             locator_method_a=AppiumBy.ANDROID_UIAUTOMATOR,
+            ui_selector=UiSelector.DESC
         )
 
         # Scroll to Element (Multi-platform, single code base)
