@@ -3,7 +3,7 @@
 This library is to provide a number gesture/interaction functions for Appium mobile automation.  
 The gestures are platform agnostic, which allows the user to provide a WebElement - or locators for both Android and iOS in the same function call.  
 
-*Note:* This documentation is for the upcoming v0.2.0 release.
+**Note:** This documentation is for the upcoming v0.2.0 release.
 
 ## Available Functions
 
@@ -143,7 +143,7 @@ If this situation applies to you, the `direction` parameter will need to be spec
 
 The fallback method will calculate the viewport size, and then define a scrollable region based on crop factors to avoid triggering the notification shade/center or multi-tasking view.  
 If it cannot locate the element, it will call `_perform_navigation_partial_` until it does - or it exceeds the max attempts.  
-In the event that the element _is_ present but _not_ in the viewport, it will calculate the distance to the element.  
+In the event that the element *is* present but *not* in the viewport, it will calculate the distance to the element.  
 Then, it will determine the correct number of full (and if necessary) partial swipes to bring the element into the center of the viewport.  
 
 Additionally, the `if actions_partial > SWIPE_ACTION_THRESHOLD` check ensures the pixel distance is large enough to warrant an action.  
