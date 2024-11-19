@@ -3,6 +3,8 @@
 This library is to provide a number gesture/interaction functions for Appium mobile automation.  
 The gestures are platform agnostic, which allows the user to provide a WebElement - or locators for both Android and iOS in the same function call.  
 
+*Note:* This documentation is for the upcoming v0.2.0 release.
+
 ## Available Functions
 
 ### Swipe Gestures
@@ -27,7 +29,7 @@ The gestures are platform agnostic, which allows the user to provide a WebElemen
 
 -----
 
-[Documentation](https://tanakrit-d.github.io/appium-swipe-actions/appium/gesture.html)
+[Documentation](https://tanakrit-d.github.io/appium-gesture-actions/index.html)
 
 ## Compatibility
 
@@ -47,7 +49,7 @@ uv add appium-gesture-actions
 ### Changelog
 
 ```md
-## 0.2.0 (2024-11-20)
+## 0.2.0 (2024-11-XX)
 
 - Renamed package
 - Complete re-write of functionality
@@ -61,7 +63,7 @@ uv add appium-gesture-actions
 - Changed to uv for packaging
 ```
 
-See full list of changes: [CHANGES.md](https://github.com/Tanakrit-D/Appium-Swipe-Actions/raw/main/CHANGES.md)
+See full list of changes: [CHANGES.md](https://github.com/tanakrit-d/appium-gesture-actions/raw/main/CHANGES.md)
 
 ## To-do
 
@@ -78,7 +80,7 @@ See full list of changes: [CHANGES.md](https://github.com/Tanakrit-D/Appium-Swip
 
 ## Demo and Example Usage
 
-![Library Demo](https://github.com/Tanakrit-D/Appium-Swipe-Actions/raw/main/demo/example.gif)
+![Library Demo](https://github.com/tanakrit-d/appium-gesture-actions/raw/main/demo/example.gif)
 
 ```python
 from appium.gesture.actions import GestureActions, SeekDirection
@@ -152,7 +154,7 @@ This library divides the viewport into four bounds: upper, lower, left, and righ
 Using these bounds, we then define a 'scrollable region'. We can then perform our scroll/swipe actions within this space.  
 The impetus for this is to recreate scrolling/swiping behaviour more similar to a user and avoid hardcoding co-ordinates.  
 Additionally, it avoids the automation attempting to perform actions on top of elements (such as headers or footers).  
-![Viewport Diagram](https://github.com/Tanakrit-D/Appium-Swipe-Actions/raw/main/resources/viewport_scrollable_bounds.png)
+![Viewport Diagram](https://github.com/tanakrit-d/appium-gesture-actions/raw/main/resources/viewport_scrollable_bounds.png)
 
 ## Defining Element Points
 
@@ -162,7 +164,7 @@ For the purpose of this library, we are only concerned with two attributes of an
 The element's co-ordinates within the viewport is considered the top-left-point.
 
 We can then use the element size to determine where it occupies relative to the view-port position.
-![Element Diagram](https://github.com/Tanakrit-D/Appium-Swipe-Actions/raw/main/resources/understanding_element_position-dimension.png)
+![Element Diagram](https://github.com/tanakrit-d/appium-gesture-actions/raw/main/resources/understanding_element_position-dimension.png)
 
 ```python
 top_left_point      = element.location["x"], element.location["y"]
@@ -194,7 +196,7 @@ Bottom-Mid-Point:  (40, 40)
 Bottom-Right-Point:  (60, 40)
 ```
 
-An example of this is available here: [demo/calc_coordinates.py](https://raw.githubusercontent.com/Tanakrit-D/Appium-Swipe-Actions/blob/main/demo/calc_coordinates.py)
+An example of this is available here: [demo/calc_coordinates.py](https://raw.githubusercontent.com/tanakrit-d/appium-gesture-actions/blob/main/demo/calc_coordinates.py)
 
 ## Notes
 
