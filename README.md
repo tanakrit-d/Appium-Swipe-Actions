@@ -58,8 +58,8 @@ uv add appium-gesture-actions
 - Added platform-specific code
 - Added a number of new gestures
   - Drag and Drop
-  - Zoom In
-  - Zoom Out
+  - Pinch/Zoom In
+  - Pinch/Zoom Out
 - Added error handling
 - Added API docs
 - Changed to uv for packaging
