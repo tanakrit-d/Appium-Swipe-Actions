@@ -49,7 +49,7 @@ uv add appium-gesture-actions
 ### Changelog
 
 ```md
-## 0.2.0 (2024-11-20) 🥳
+## 0.2.1 (2024-11-21) 🥳
 
 - Renamed package
 - Complete re-write of functionality
@@ -119,11 +119,10 @@ class TestDemo(TestCore):
             Direction.LEFT,
         )
 
-        # Scroll to Element (Android - UiAutomator) (Android)
+        # Scroll to Element (Android - UiAutomator)
         action.swipe.element_into_view(
-            value_a="Save",
+            value_a='new UiSelector().description("Save")',
             locator_method_a=AppiumBy.ANDROID_UIAUTOMATOR,
-            ui_selector=UiSelector.DESC
         )
 
         # Scroll to Element (Android - XPATH)
@@ -136,7 +135,7 @@ class TestDemo(TestCore):
         # Scroll to Element (Multi-platform, single code base)
         action.swipe.element_into_view(
             value_a='//android.widget.Button[@content-desc="Save"]',
-            value_i='label == \'Submit\''
+            value_i="label == 'Save'"
             locator_method_a=AppiumBy.XPATH,
             locator_method_i=AppiumBy.IOS_PREDICATE,
             direction=SeekDirection.DOWN,
@@ -146,7 +145,7 @@ class TestDemo(TestCore):
 ## An Explainer on Swipe Element Into View
 
 This function (part of the [SwipeGestures](https://github.com/tanakrit-d/appium-gesture-actions/blob/ae1d229d14ced2a20169982d6284fcf7ed92c22b/src/appium/gesture/swipe.py#L45) class) has cross-platform support.  
-It is achieved by using parameters with different suffixes (`_a` and `_i` for Android and iOS respectively) and support for `**kwargs`.  
+It is achieved by using parameters with different suffixes (`_a` and `_i` for Android and iOS respectively).  
 
 This will allow you to use a single function call for use on both platforms.
 
