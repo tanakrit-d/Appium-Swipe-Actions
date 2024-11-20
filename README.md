@@ -87,8 +87,8 @@ See full list of changes: [CHANGES.md](https://github.com/tanakrit-d/appium-gest
 ![Library Demo](https://github.com/tanakrit-d/appium-gesture-actions/raw/main/demo/example.gif)
 
 ```python
-from appium.gesture.actions import GestureActions, SeekDirection
-from appium.gesture.enums import SeekDirection, UiSelector
+from appium.gesture.actions import GestureActions
+from appium.gesture.enums import Direction, SeekDirection, UiSelector
 
 class TestDemo(TestCore):
     def test_cool_stuff(self):
@@ -112,6 +112,12 @@ class TestDemo(TestCore):
 
         # Pinch
         action.pinch.open(image_element)
+
+        # Swipe on Element
+        action.swipe.on_element(
+            image_element,
+            Direction.LEFT,
+        )
 
         # Scroll to Element (Android - UiAutomator) (Android)
         action.swipe.element_into_view(
