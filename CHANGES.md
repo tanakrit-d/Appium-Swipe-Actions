@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.2.0 (2024-11-XX)
+## 0.2.0 (2024-11-20) 🥳
 
 - Renamed package
 - Complete re-write of functionality
@@ -9,6 +9,7 @@
   - Drag and Drop
   - Pinch/Zoom In
   - Pinch/Zoom Out
+- Added safe inserts for Swipe On Element
 - Added error handling
 - Added API docs
 - Changed to uv for packaging

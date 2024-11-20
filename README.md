@@ -3,8 +3,6 @@
 This library is to provide a number gesture/interaction functions for Appium mobile automation.  
 The gestures are platform agnostic, which allows the user to provide a WebElement - or locators for both Android and iOS in the same function call.  
 
-**Note:** This documentation is for the upcoming v0.2.0 release. It is available on [TestPyPi](https://test.pypi.org/project/appium-gesture-actions/0.2.0/)
-
 ## Available Functions
 
 ### Swipe Gestures
@@ -51,7 +49,7 @@ uv add appium-gesture-actions
 ### Changelog
 
 ```md
-## 0.2.0 (2024-11-XX)
+## 0.2.0 (2024-11-20) 🥳
 
 - Renamed package
 - Complete re-write of functionality
@@ -60,6 +58,7 @@ uv add appium-gesture-actions
   - Drag and Drop
   - Pinch/Zoom In
   - Pinch/Zoom Out
+- Added safe inserts for Swipe On Element
 - Added error handling
 - Added API docs
 - Changed to uv for packaging
@@ -75,6 +74,7 @@ See full list of changes: [CHANGES.md](https://github.com/tanakrit-d/appium-gest
 - [x] Add documentation
 - [x] Add examples for other gestures
 - [x] Return bool for most functions
+- [ ] Return WebElement on `element_into_view()`
 - [ ] Completely rewrite the tests
 - [ ] Allow for the specifying of values in sub-classes (such as `_max_attempts` or `CROP_FACTOR_` in `SwipeGestures`)
 - [ ] Reduce minimum Python version
@@ -113,15 +113,23 @@ class TestDemo(TestCore):
         # Pinch
         action.pinch.open(image_element)
 
-        # Scroll to Element (Android)
+        # Scroll to Element (Android - UiAutomator) (Android)
         action.swipe.element_into_view(
-            value_a='"Save"',
+            value_a="Save",
             locator_method_a=AppiumBy.ANDROID_UIAUTOMATOR,
             ui_selector=UiSelector.DESC
         )
 
+        # Scroll to Element (Android - XPATH)
+        action.swipe.element_into_view(
+            value_a="//android.widget.ImageView",
+            locator_method_a=AppiumBy.XPATH,
+            direction=SeekDirection.UP,
+        )
+
         # Scroll to Element (Multi-platform, single code base)
         action.swipe.element_into_view(
+            value_a='//android.widget.Button[@content-desc="Save"]',
             value_a='//android.widget.Button[@content-desc="Save"]',
             value_i='label == \'Submit\''
             locator_method_a=AppiumBy.XPATH,
