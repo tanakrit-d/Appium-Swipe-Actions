@@ -94,7 +94,7 @@ class SwipeGestures:
         )
         return action
 
-    def element_into_view(self, value_a: str | None, value_i: str | None, **kwargs: PlatformParams) -> None:
+    def element_into_view(self, value_a: str | None = None, value_i: str | None = None, **kwargs: PlatformParams) -> None:
         """
         Swipe to bring an element into view.
 
@@ -138,9 +138,7 @@ class SwipeGestures:
         locator_method = kwargs.get("locator_method_a")
         if locator_method == AppiumBy.ANDROID_UIAUTOMATOR:
             ui_selector = kwargs.get("ui_selector").value
-            # fmt: off
-            query = f'new UiScrollable(new UiSelector().scrollable(true)).scrollIntoView(new UiSelector().{ui_selector}(\"{value}\"))'  # noqa: Q004
-            # fmt: on
+            query = f'new UiScrollable(new UiSelector().scrollable(true)).scrollIntoView(new UiSelector().{ui_selector}("{value}"))'
             self._driver.find_element(AppiumBy.ANDROID_UIAUTOMATOR, query)
             return True
         msg = "Locator was not of type AppiumBy.ANDROID_UIAUTOMATOR or failed to locate element within viewport,"
@@ -169,9 +167,7 @@ class SwipeGestures:
 
     def _query_builder_uiautomator(self, value: str, **kwargs: AndroidParams) -> str:
         ui_selector = kwargs.get("ui_selector")
-        # fmt: off
-        return f'(new UiSelector().{ui_selector}(\"{value}\"))'  # noqa: Q004
-        # fmt: on
+        return f'(new UiSelector().{ui_selector}("{value}"))'
 
     def _fallback_scroll_to_element(self, value: str, **kwargs: PlatformParams) -> bool:
         if self._platform == "Android":
@@ -287,7 +283,7 @@ class SwipeGestures:
         """Swipe on a specific element in the given direction."""
         try:
             action = self._create_action()
-            element_points = calculate_element_points(element)
+            element_points = calculate_element_points(element, True)
 
             points_map = {
                 Direction.UP: (element_points["bottom_mid"], element_points["top_mid"]),

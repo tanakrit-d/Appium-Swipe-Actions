@@ -14,7 +14,9 @@ from .exceptions import ViewportError
 logger = logging.getLogger(__name__)
 
 
-def calculate_boundaries_and_scrollable_area(driver: WebDriver, **kwargs: any) -> tuple[dict, dict]:
+def calculate_boundaries_and_scrollable_area(
+    driver: WebDriver, **kwargs: any
+) -> tuple[dict, dict]:
     """
     Calculate and return scrolling boundaries and scrollable area based on crop factors.
 
@@ -68,15 +70,22 @@ def _get_element_coordinates(element: WebElement) -> tuple[int, int, int, int]:
     return x, y, width, height
 
 
-def calculate_element_points(element: WebElement) -> dict[str, tuple[int, int]]:
+def calculate_element_points(
+    element: WebElement, safe_inset: bool = False
+) -> dict[str, tuple[int, int]]:
     """
-    Calculate various points on an element.
+    Calculate various points on an element with optional safety insets.
 
     Args:
         element: The WebElement to calculate points for.
+        safe_inset: If True, applies a 10% inset to all edge points for safer interaction.
+                    Default is False.
 
     Returns:
-        A dictionary containing coordinates of various points on the element.
+        A dictionary containing coordinates of nine points on the element:
+        - Corners: top_left, top_right, bottom_left, bottom_right
+        - Edge midpoints: top_mid, right_mid, bottom_mid, left_mid
+        - Center: mid
 
     Raises:
         ValueError: If the element dimensions are invalid.
@@ -84,17 +93,46 @@ def calculate_element_points(element: WebElement) -> dict[str, tuple[int, int]]:
     try:
         x, y, width, height = _get_element_coordinates(element)
 
+        mid_x = x + width // 2
+        mid_y = y + height // 2
+        right_x = x + width
+        bottom_y = y + height
+
+        if safe_inset:
+            inset = 0.1  # 10% inset
+            inset_x = int(width * inset)
+            inset_y = int(height * inset)
+
+            return {
+                # Corners
+                "top_left": (x + inset_x, y + inset_y),
+                "top_right": (right_x - inset_x, y + inset_y),
+                "bottom_left": (x + inset_x, bottom_y - inset_y),
+                "bottom_right": (right_x - inset_x, bottom_y - inset_y),
+                # Edge midpoints
+                "top_mid": (mid_x, y + inset_y),
+                "right_mid": (right_x - inset_x, mid_y),
+                "bottom_mid": (mid_x, bottom_y - inset_y),
+                "left_mid": (x + inset_x, mid_y),
+                # Center point
+                "mid": (mid_x, mid_y),
+            }
+
         return {
+            # Corners
             "top_left": (x, y),
-            "top_mid": (x + width // 2, y),
-            "top_right": (x + width, y),
-            "left_mid": (x, y + height // 2),
-            "mid": (x + width // 2, y + height // 2),
-            "right_mid": (x + width, y + height // 2),
-            "bottom_left": (x, y + height),
-            "bottom_mid": (x + width // 2, y + height),
-            "bottom_right": (x + width, y + height),
+            "top_right": (right_x, y),
+            "bottom_left": (x, bottom_y),
+            "bottom_right": (right_x, bottom_y),
+            # Edge midpoints
+            "top_mid": (mid_x, y),
+            "right_mid": (right_x, mid_y),
+            "bottom_mid": (mid_x, bottom_y),
+            "left_mid": (x, mid_y),
+            # Center point
+            "mid": (mid_x, mid_y),
         }
+
     except ValueError as e:
         msg = f"Failed to calculate element points: {str(e)}"
         logger.error(msg)
