@@ -75,6 +75,7 @@ See full list of changes: [CHANGES.md](https://github.com/tanakrit-d/appium-gest
 - [x] Add documentation
 - [x] Add examples for other gestures
 - [x] Return bool for most functions
+- [ ] Return WebElement on `element_into_view()`
 - [ ] Completely rewrite the tests
 - [ ] Allow for the specifying of values in sub-classes (such as `_max_attempts` or `CROP_FACTOR_` in `SwipeGestures`)
 - [ ] Reduce minimum Python version
@@ -113,11 +114,18 @@ class TestDemo(TestCore):
         # Pinch
         action.pinch.open(image_element)
 
-        # Scroll to Element (Android)
+        # Scroll to Element (Android - UiAutomator)
         action.swipe.element_into_view(
-            value_a='"Save"',
+            value_a="Save",
             locator_method_a=AppiumBy.ANDROID_UIAUTOMATOR,
             ui_selector=UiSelector.DESC
+        )
+
+        # Scroll to Element (Android - XPATH)
+        action.swipe.element_into_view(
+            value_a="//android.widget.ImageView",
+            locator_method_a=AppiumBy.XPATH,
+            direction=SeekDirection.UP,
         )
 
         # Scroll to Element (Multi-platform, single code base)
