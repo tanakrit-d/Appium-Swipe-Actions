@@ -35,12 +35,16 @@ build-backend = "hatchling.build"
 [tool.hatch.metadata]
 allow-direct-references = true
 
+[tool.hatch.build]
+include = [
+    "src/appium/**/*",
+]
+
 [tool.hatch.build.targets.sdist]
-include = ["src"]
+packages = ["src/appium"]
 
 [tool.hatch.build.targets.wheel]
-packages = ["appium"]
-packages-dir = "src"
+packages = ["src/appium"]
 
 [project.urls]
 homepage = "https://github.com/tanakrit-d/appium-gesture-actions"
