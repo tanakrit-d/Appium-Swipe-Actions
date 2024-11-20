@@ -24,22 +24,22 @@ CROP_FACTOR_LEFT = 0.10
 CROP_FACTOR_RIGHT = 0.90
 
 
-class AndroidParams(TypedDict, total=False):
-    """Parameters for Android-specific functions."""
+# class AndroidParams(TypedDict, total=False):
+#     """Parameters for Android-specific functions."""
 
-    locator_method_a: AppiumBy
-    ui_selector: UiSelector
-    direction: SeekDirection
-
-
-class IOSParams(TypedDict, total=False):
-    """Parameters for iOS-specific functions."""
-
-    locator_method_i: AppiumBy
-    direction: SeekDirection
+#     locator_method_a: AppiumBy
+#     ui_selector: UiSelector
+#     direction: SeekDirection
 
 
-PlatformParams = AndroidParams | IOSParams
+# class IOSParams(TypedDict, total=False):
+#     """Parameters for iOS-specific functions."""
+
+#     locator_method_i: AppiumBy
+#     direction: SeekDirection
+
+
+# PlatformParams = AndroidParams | IOSParams
 
 
 class SwipeGestures:
@@ -94,7 +94,14 @@ class SwipeGestures:
         )
         return action
 
-    def element_into_view(self, value_a: str | None = None, value_i: str | None = None, **kwargs: PlatformParams) -> None:
+    def element_into_view(
+        self,
+        value_a: str | None = None,
+        locator_method_a: AppiumBy = None,
+        value_i: str | None = None,
+        locator_method_i: AppiumBy = None,
+        direction: SeekDirection = SeekDirection.DOWN,
+    ):
         """
         Swipe to bring an element into view.
 
@@ -107,15 +114,11 @@ class SwipeGestures:
         Suffixes `_a` and `_i` are for Android and iOS respectively.
 
         Args:
-            value_a && value_i (str): The locator value(s) for the element to swipe to view.
-            **kwargs (PlatformParams): Additional parameters for platform-specific locators.
-                - For Android (AndroidParams):
-                    - locator_method_a (AppiumBy): The method to locate the element (e.g., AppiumBy.ANDROID_UIAUTOMATOR).
-                    - ui_selector (UiSelector): The UI selector for more precise targeting.
-                    - direction (SeekDirection): The direction to scroll (e.g., SeekDirection.UP).
-                - For iOS (IOSParams):
-                    - locator_method_i (AppiumBy): The method to locate the element (e.g., AppiumBy.IOS_PREDICATE).
-                    - direction (SeekDirection): The direction to scroll (e.g., SeekDirection.DOWN).
+            value_a (str): The locator value for the element to swipe to view (e.g., new UiSelector().description("Day planted")).
+            locator_method_a (AppiumBy): The method to locate the element (e.g., AppiumBy.ANDROID_UIAUTOMATOR).
+            value_i (str): The locator value for the element to swipe to view (e.g., label == 'Flowers').
+            locator_method_i (AppiumBy): The method to locate the element (e.g., AppiumBy.IOS_PREDICATE).
+            direction (SeekDirection): The direction to scroll (e.g., SeekDirection.DOWN).
 
         Raises:
             ValueError: If the specified platform is unknown or unspecified.
@@ -125,30 +128,28 @@ class SwipeGestures:
 
         """
         if self._platform == "Android":
-            self._scroll_to_android(value_a, **kwargs)
+            self._scroll_to_android(value_a, locator_method_a, direction)
 
         elif self._platform == "iOS":
-            self._scroll_to_ios(value_i, **kwargs)
+            self._scroll_to_ios(value_i, locator_method_i, direction)
 
         else:
             msg = "Unspecified or unknown platform."
             raise ValueError(msg)
 
-    def _scroll_to_android(self, value: str, **kwargs: AndroidParams) -> bool | None:
-        locator_method = kwargs.get("locator_method_a")
+    def _scroll_to_android(self, value: str, locator_method: AppiumBy, direction: SeekDirection = None) -> bool | None:
         if locator_method == AppiumBy.ANDROID_UIAUTOMATOR:
-            ui_selector = kwargs.get("ui_selector").value
-            query = f'new UiScrollable(new UiSelector().scrollable(true)).scrollIntoView(new UiSelector().{ui_selector}("{value}"))'
+            # ui_selector = kwargs.get("ui_selector").value
+            query = f"new UiScrollable(new UiSelector().scrollable(true)).scrollIntoView({value})"
             self._driver.find_element(AppiumBy.ANDROID_UIAUTOMATOR, query)
             return True
         msg = "Locator was not of type AppiumBy.ANDROID_UIAUTOMATOR or failed to locate element within viewport,"
         "falling back to alternative method."
         logger.info(msg)
-        self._fallback_scroll_to_element(value, **kwargs)
+        self._fallback_scroll_to_element(value, locator_method, direction)
         return None
 
-    def _scroll_to_ios(self, value: str, **kwargs: IOSParams) -> bool | None:
-        locator_method = kwargs.get("locator_method_i")
+    def _scroll_to_ios(self, value: str, locator_method: AppiumBy, direction: SeekDirection) -> bool | None:
         try:
             element = self._driver.find_element(locator_method, value)
             self._driver.execute_script(
@@ -160,30 +161,16 @@ class SwipeGestures:
         except NoSuchElementException:
             msg = "Failed to locate element within viewport, falling back to alternative method."
             logger.info(msg)
-            self._fallback_scroll_to_element(value, **kwargs)
+            self._fallback_scroll_to_element(value, locator_method, direction)
             return None
         else:
             return True
 
-    def _query_builder_uiautomator(self, value: str, **kwargs: AndroidParams) -> str:
-        ui_selector = kwargs.get("ui_selector")
-        return f'(new UiSelector().{ui_selector}("{value}"))'
+    # def _query_builder_uiautomator(self, value: str, locator_method) -> str:
+    #     ui_selector = kwargs.get("ui_selector")
+    #     return f'(new UiSelector().{ui_selector}("{value}"))'
 
-    def _fallback_scroll_to_element(self, value: str, **kwargs: PlatformParams) -> bool:
-        if self._platform == "Android":
-            android_params: AndroidParams = kwargs
-            locator_method = android_params.get("locator_method_a")
-            direction = android_params.get("direction", SeekDirection.DOWN)
-            if locator_method == AppiumBy.ANDROID_UIAUTOMATOR:
-                value = self._query_builder_uiautomator()
-        elif self._platform == "iOS":
-            ios_params: IOSParams = kwargs
-            locator_method = ios_params.get("locator_method_i")
-            direction = ios_params.get("direction", SeekDirection.DOWN)
-        else:
-            msg = f"Unsupported platform: {self._platform}"
-            raise ValueError(msg)
-
+    def _fallback_scroll_to_element(self, value: str, locator_method: AppiumBy, direction: SeekDirection = None) -> bool:
         action = self._create_action()
         for _ in range(self._max_attempts):
             try:
@@ -235,7 +222,9 @@ class SwipeGestures:
         """Perform a full upward swipe of the calculated viewport."""
         action = self._create_action()
         try:
-            self._perform_navigation_full_y(action, self._boundaries["lower"], self._boundaries["upper"])
+            self._perform_navigation_full_y(
+                action, self._boundaries["lower"], self._boundaries["upper"]
+            )
         except (WebDriverException, KeyError, AttributeError) as e:
             self._log_and_raise(f"Failed to swipe up: {e}", e)
 
@@ -243,7 +232,9 @@ class SwipeGestures:
         """Perform a full downward swipe of the calculated viewport."""
         action = self._create_action()
         try:
-            self._perform_navigation_full_y(action, self._boundaries["upper"], self._boundaries["lower"])
+            self._perform_navigation_full_y(
+                action, self._boundaries["upper"], self._boundaries["lower"]
+            )
         except (WebDriverException, KeyError, AttributeError) as e:
             self._log_and_raise(f"Failed to swipe down: {e}", e)
 
@@ -251,7 +242,9 @@ class SwipeGestures:
         """Perform a full leftward swipe of the calculated viewport."""
         action = self._create_action()
         try:
-            self._perform_navigation_full_x(action, self._boundaries["right"], self._boundaries["left"])
+            self._perform_navigation_full_x(
+                action, self._boundaries["right"], self._boundaries["left"]
+            )
         except (WebDriverException, KeyError, AttributeError) as e:
             self._log_and_raise(f"Failed to swipe left: {e}", e)
 
@@ -259,7 +252,9 @@ class SwipeGestures:
         """Perform a full rightward swipe of the calculated viewport."""
         action = self._create_action()
         try:
-            self._perform_navigation_full_x(action, self._boundaries["left"], self._boundaries["right"])
+            self._perform_navigation_full_x(
+                action, self._boundaries["left"], self._boundaries["right"]
+            )
         except (WebDriverException, KeyError, AttributeError) as e:
             self._log_and_raise(f"Failed to swipe right: {e}", e)
 
@@ -287,22 +282,35 @@ class SwipeGestures:
 
             points_map = {
                 Direction.UP: (element_points["bottom_mid"], element_points["top_mid"]),
-                Direction.DOWN: (element_points["top_mid"], element_points["bottom_mid"]),
-                Direction.RIGHT: (element_points["left_mid"], element_points["right_mid"]),
-                Direction.LEFT: (element_points["right_mid"], element_points["left_mid"]),
+                Direction.DOWN: (
+                    element_points["top_mid"],
+                    element_points["bottom_mid"],
+                ),
+                Direction.RIGHT: (
+                    element_points["left_mid"],
+                    element_points["right_mid"],
+                ),
+                Direction.LEFT: (
+                    element_points["right_mid"],
+                    element_points["left_mid"],
+                ),
             }
 
             self._perform_navigation_on_element(action, *points_map[direction])
         except (WebDriverException, KeyError, AttributeError, ValueError) as e:
             self._log_and_raise(f"Failed to swipe on element: {e}", e)
 
-    def _swipe_element_into_view_vertical(self, action: ActionChains, element_y: int, direction: SeekDirection) -> None:
+    def _swipe_element_into_view_vertical(
+        self, action: ActionChains, element_y: int, direction: SeekDirection
+    ) -> None:
         """Perform vertical swipes to bring an element into view."""
         try:
             distance_to_element = element_y - self._boundaries["lower"]
             actions_total = distance_to_element / self._scrollable_area["y"]
             actions_complete = int(distance_to_element // self._scrollable_area["y"])
-            actions_partial = int(self._scrollable_area["y"] * (actions_total - actions_complete))
+            actions_partial = int(
+                self._scrollable_area["y"] * (actions_total - actions_complete)
+            )
 
             start, end = (
                 (self._boundaries["upper"], self._boundaries["lower"])
@@ -314,16 +322,26 @@ class SwipeGestures:
                 self._perform_navigation_full_y(action, start, end, actions_complete)
             if actions_partial > SWIPE_ACTION_THRESHOLD:
                 self._perform_navigation_partial_y(action, start, end, actions_partial)
-        except (WebDriverException, KeyError, ZeroDivisionError, TypeError, ValueError) as e:
+        except (
+            WebDriverException,
+            KeyError,
+            ZeroDivisionError,
+            TypeError,
+            ValueError,
+        ) as e:
             self._log_and_raise(f"Failed to swipe element into view vertically: {e}", e)
 
-    def _swipe_element_into_view_horizontal(self, action: ActionChains, element_x: int, direction: SeekDirection) -> None:
+    def _swipe_element_into_view_horizontal(
+        self, action: ActionChains, element_x: int, direction: SeekDirection
+    ) -> None:
         """Perform horizontal swipes to bring an element into view."""
         try:
             distance_to_element = element_x - self._boundaries["left"]
             actions_total = distance_to_element / self._scrollable_area["x"]
             actions_complete = int(distance_to_element // self._scrollable_area["x"])
-            actions_partial = int(self._scrollable_area["x"] * (actions_total - actions_complete))
+            actions_partial = int(
+                self._scrollable_area["x"] * (actions_total - actions_complete)
+            )
 
             start, end = (
                 (self._boundaries["right"], self._boundaries["left"])
@@ -335,10 +353,24 @@ class SwipeGestures:
                 self._perform_navigation_full_x(action, start, end, actions_complete)
             if actions_partial > SWIPE_ACTION_THRESHOLD:
                 self._perform_navigation_partial_x(action, start, end, actions_partial)
-        except (WebDriverException, KeyError, ZeroDivisionError, TypeError, ValueError) as e:
-            self._log_and_raise(f"Failed to swipe element into view horizontally: {e}", e)
+        except (
+            WebDriverException,
+            KeyError,
+            ZeroDivisionError,
+            TypeError,
+            ValueError,
+        ) as e:
+            self._log_and_raise(
+                f"Failed to swipe element into view horizontally: {e}", e
+            )
 
-    def _perform_navigation_full_y(self, action: ActionChains, initial_bound: int, final_bound: int, iterations: int = 1) -> None:
+    def _perform_navigation_full_y(
+        self,
+        action: ActionChains,
+        initial_bound: int,
+        final_bound: int,
+        iterations: int = 1,
+    ) -> None:
         """Perform full vertical navigation swipes."""
         try:
             for _ in range(iterations):
@@ -351,7 +383,13 @@ class SwipeGestures:
         except (WebDriverException, AttributeError, ValueError) as e:
             self._log_and_raise(f"Failed to perform full vertical navigation: {e}", e)
 
-    def _perform_navigation_partial_y(self, action: ActionChains, initial_bound: int, final_bound: int, partial_percentage: int) -> None:
+    def _perform_navigation_partial_y(
+        self,
+        action: ActionChains,
+        initial_bound: int,
+        final_bound: int,
+        partial_percentage: int,
+    ) -> None:
         """Perform a partial vertical navigation swipe."""
         try:
             self._perform_swipe(
@@ -361,9 +399,17 @@ class SwipeGestures:
             )
             action.perform()
         except (WebDriverException, AttributeError, ValueError) as e:
-            self._log_and_raise(f"Failed to perform partial vertical navigation: {e}", e)
+            self._log_and_raise(
+                f"Failed to perform partial vertical navigation: {e}", e
+            )
 
-    def _perform_navigation_full_x(self, action: ActionChains, initial_bound: int, final_bound: int, iterations: int = 1) -> None:
+    def _perform_navigation_full_x(
+        self,
+        action: ActionChains,
+        initial_bound: int,
+        final_bound: int,
+        iterations: int = 1,
+    ) -> None:
         """Perform full horizontal navigation swipes."""
         try:
             for _ in range(iterations):
@@ -376,7 +422,13 @@ class SwipeGestures:
         except (WebDriverException, AttributeError, ValueError) as e:
             self._log_and_raise(f"Failed to perform full horizontal navigation: {e}", e)
 
-    def _perform_navigation_partial_x(self, action: ActionChains, initial_bound: int, final_bound: int, partial_percentage: int) -> None:
+    def _perform_navigation_partial_x(
+        self,
+        action: ActionChains,
+        initial_bound: int,
+        final_bound: int,
+        partial_percentage: int,
+    ) -> None:
         """Perform a partial horizontal navigation swipe."""
         try:
             self._perform_swipe(
@@ -386,9 +438,16 @@ class SwipeGestures:
             )
             action.perform()
         except (WebDriverException, AttributeError, ValueError) as e:
-            self._log_and_raise(f"Failed to perform partial horizontal navigation: {e}", e)
+            self._log_and_raise(
+                f"Failed to perform partial horizontal navigation: {e}", e
+            )
 
-    def _perform_navigation_on_element(self, action: ActionChains, initial_bound: tuple[int, int], final_bound: tuple[int, int]) -> None:
+    def _perform_navigation_on_element(
+        self,
+        action: ActionChains,
+        initial_bound: tuple[int, int],
+        final_bound: tuple[int, int],
+    ) -> None:
         """Perform a navigation swipe on a specific element."""
         try:
             self._perform_swipe(action, initial_bound, final_bound)
@@ -396,7 +455,9 @@ class SwipeGestures:
         except (WebDriverException, AttributeError, ValueError) as e:
             self._log_and_raise(f"Failed to perform navigation on element: {e}", e)
 
-    def _perform_swipe(self, action: ActionChains, start: tuple[int, int], end: tuple[int, int]) -> None:
+    def _perform_swipe(
+        self, action: ActionChains, start: tuple[int, int], end: tuple[int, int]
+    ) -> None:
         """Perform a swipe action from start to end coordinates."""
         try:
             action.w3c_actions.pointer_action.move_to_location(*start)
