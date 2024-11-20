@@ -136,7 +136,6 @@ class TestDemo(TestCore):
         # Scroll to Element (Multi-platform, single code base)
         action.swipe.element_into_view(
             value_a='//android.widget.Button[@content-desc="Save"]',
-            value_a='//android.widget.Button[@content-desc="Save"]',
             value_i='label == \'Submit\''
             locator_method_a=AppiumBy.XPATH,
             locator_method_i=AppiumBy.IOS_PREDICATE,
