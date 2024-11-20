@@ -113,7 +113,7 @@ class TestDemo(TestCore):
         # Pinch
         action.pinch.open(image_element)
 
-        # Scroll to Element (Android - UiAutomator)
+        # Scroll to Element (Android - UiAutomator) (Android)
         action.swipe.element_into_view(
             value_a="Save",
             locator_method_a=AppiumBy.ANDROID_UIAUTOMATOR,
@@ -129,6 +129,7 @@ class TestDemo(TestCore):
 
         # Scroll to Element (Multi-platform, single code base)
         action.swipe.element_into_view(
+            value_a='//android.widget.Button[@content-desc="Save"]',
             value_a='//android.widget.Button[@content-desc="Save"]',
             value_i='label == \'Submit\''
             locator_method_a=AppiumBy.XPATH,
