@@ -1,0 +1,62 @@
+site_name: Appium Gesture Actions
+
+theme:
+  name: material
+  logo: assets/logo.png
+  favicon: assets/favicon.png
+  palette:
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: deep purple 
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to system preference
+  features:
+    - navigation.expand
+    - navigation.instant
+
+nav:
+  - Home: index.md
+  - Reference:
+      - Actions: reference/actions.md
+      - Calculations: reference/calculations.md
+      - Drag and Drop: reference/drag_and_drop.md
+      - Enums: reference/enums.md
+      - Exceptions: reference/exceptions.md
+      - Pinch: reference/pinch.md
+      - Swipe: reference/swipe.md
+
+exclude_docs: |
+  __init__.py
+
+markdown_extensions:
+  - attr_list
+  - md_in_html
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - toc:
+      permalink: "#"
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            show_root: false
+            show_module_path: true
+            exclude:
+              - __init__.py

@@ -14,7 +14,10 @@ keywords = [
     "zoom",
     "drag and drop",
 ]
-dependencies = ["appium-python-client>=4.3.0", "selenium>=4.26.1"]
+dependencies = [
+    "appium-python-client>=4.3.0",
+    "selenium>=4.26.1",
+]
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
@@ -24,7 +27,9 @@ classifiers = [
 [dependency-groups]
 dev = [
     "build>=1.2.2.post1",
-    "pdoc>=15.0.0",
+    "mkdocs>=1.6.1",
+    "mkdocs-material>=9.5.48",
+    "mkdocstrings-python>=1.12.2",
     "pytest>=8.3.3",
     "ruff>=0.8.2",
     "twine>=5.1.1",
