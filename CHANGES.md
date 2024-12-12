@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.3.0 (2024-12-12) 🥳
+## 0.3.0 (2024-12-12) 🎄
 
 - Renamed package to resolve namespace collisions
   - This also resolved the workaround required when building docs
@@ -14,7 +14,7 @@
 - Migrating back from TypedDict allows for better Type Hinting/Intellisense
 - Updated demo
 
-## 0.2.0 (2024-11-20)
+## 0.2.0 (2024-11-20) 🥳
 
 - Renamed package
 - Complete re-write of functionality
