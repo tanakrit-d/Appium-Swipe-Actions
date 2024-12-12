@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="docs/assets/logo.png" width="100">
+  <img src="https://github.com/tanakrit-d/appium-gesture-actions/raw/main/docs/assets/logo.png" width="100">
   <p><strong>Appium Gesture Library</strong></p>
 </div>
 
@@ -32,7 +32,7 @@ The gestures are platform agnostic, which allows the user to provide a WebElemen
 
 -----
 
-[Documentation](https://tanakrit-d.github.io/appium-gesture-actions/index.html)
+[API Documentation](https://tanakrit-d.github.io/appium-gesture-actions/index.html)
 
 -----
 
