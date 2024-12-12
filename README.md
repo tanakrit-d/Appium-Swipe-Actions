@@ -41,9 +41,9 @@ The gestures are platform agnostic, which allows the user to provide a WebElemen
 ## Install
 
 ```bash
-pip install appium-gesture-actions
+pip install interaction-gesture-actions
 # or
-uv add appium-gesture-actions
+uv add interaction-gesture-actions
 ```
 
 ### Changelog
