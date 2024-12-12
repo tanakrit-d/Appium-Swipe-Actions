@@ -1,13 +1,12 @@
 import logging
 
+from appium.webdriver.webdriver import WebDriver
+from appium.webdriver.webelement import WebElement
 from selenium.common.exceptions import (
     NoSuchElementException,
     TimeoutException,
     WebDriverException,
 )
-
-from appium.webdriver.webdriver import WebDriver
-from appium.webdriver.webelement import WebElement
 
 from .exceptions import ViewportError
 

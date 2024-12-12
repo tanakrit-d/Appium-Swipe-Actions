@@ -1,15 +1,14 @@
 import logging
 from typing import TypedDict
 
+from appium.webdriver.common.appiumby import AppiumBy
+from appium.webdriver.webdriver import WebDriver
+from appium.webdriver.webelement import WebElement
 from selenium.common.exceptions import NoSuchElementException, WebDriverException
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.actions import interaction
 from selenium.webdriver.common.actions.action_builder import ActionBuilder
 from selenium.webdriver.common.actions.pointer_input import PointerInput
-
-from appium.webdriver.common.appiumby import AppiumBy
-from appium.webdriver.webdriver import WebDriver
-from appium.webdriver.webelement import WebElement
 
 from .calculations import calculate_element_points
 from .enums import Direction, SeekDirection, UiSelector

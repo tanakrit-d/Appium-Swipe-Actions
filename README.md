@@ -49,19 +49,19 @@ uv add appium-gesture-actions
 ### Changelog
 
 ```md
-## 0.2.1 (2024-11-21) 🥳
+## 0.3.0 (2024-12-12) 🥳
 
-- Renamed package
-- Complete re-write of functionality
-- Added platform-specific code
-- Added a number of new gestures
-  - Drag and Drop
-  - Pinch/Zoom In
-  - Pinch/Zoom Out
-- Added safe inserts for Swipe On Element
-- Added error handling
-- Added API docs
-- Changed to uv for packaging
+- Renamed package to resolve namespace collisions
+  - This also resolved the workaround required when building docs
+
+    ```python
+    from interaction.gestures.actions import GestureActions
+    ```
+
+- Updated dependencies
+- Change build backend from `hatchling` to `build`
+- Migrating back from TypedDict allows for better Type Hinting/Intellisense
+- Updated demo
 ```
 
 See full list of changes: [CHANGES.md](https://github.com/tanakrit-d/appium-gesture-actions/raw/main/CHANGES.md)
@@ -84,11 +84,37 @@ See full list of changes: [CHANGES.md](https://github.com/tanakrit-d/appium-gest
 
 ## Demo and Example Usage
 
-![Library Demo](https://github.com/tanakrit-d/appium-gesture-actions/raw/main/demo/example.gif)
+### Demonstration
+
+This demo shows the following actions being executed:
 
 ```python
-from appium.gesture.actions import GestureActions
-from appium.gesture.enums import Direction, SeekDirection, UiSelector
+element_a = self.driver.find_element(AppiumBy.XPATH, "//android.widget.ImageView")
+action.pinch.open(element_a)
+action.pinch.close(element_a)
+element_b = self.driver.find_element(
+    AppiumBy.XPATH,
+    "//android.widget.ScrollView/android.view.View[1]/android.widget.EditText[3]",
+)
+action.drag_drop.drag_and_drop(element_a, element_b)
+action.swipe.element_into_view(
+    value_a='new UiSelector().descriptionContains("Day planted")',
+    locator_method_a=AppiumBy.ANDROID_UIAUTOMATOR,
+)
+action.swipe.element_into_view(
+    value_a="//android.widget.ImageView",
+    locator_method_a=AppiumBy.XPATH,
+    direction=SeekDirection.UP,
+)
+```
+
+![Library Demo](https://github.com/tanakrit-d/appium-gesture-actions/raw/main/demo/example.gif)
+
+### Example Implementation
+
+```python
+from interaction.gestures.actions import GestureActions
+from interaction.gestures.enums import Direction, SeekDirection, UiSelector
 
 class TestDemo(TestCore):
     def test_cool_stuff(self):
