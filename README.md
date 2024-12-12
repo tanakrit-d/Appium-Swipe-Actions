@@ -40,7 +40,7 @@ The gestures are platform agnostic, which allows the user to provide a WebElemen
 
 - [x] Android  
   Requires: `appium driver install uiautomator2`
-- [x] iOS (unverified)  
+- [ ] iOS (unverified)  
   Requires: `appium driver install xcuitest`
 
 ## Install
