@@ -1,9 +1,9 @@
 import pytest
+from appium.webdriver.common.appiumby import AppiumBy
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 
-from appium.webdriver.common.appiumby import AppiumBy
-from src.appium.gesture.actions import Direction, GestureActions, SeekDirection
-from src.appium.gesture.exceptions import ElementNotInViewError
+from src.interaction.gesture.actions import Direction, GestureActions, SeekDirection
+from src.interaction.gesture.exceptions import ElementNotInViewError
 
 
 class MockElement:

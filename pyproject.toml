@@ -1,6 +1,6 @@
 [project]
-name = "appium-gesture-actions"
-version = "0.2.1"
+name = "interaction.gesture.actions"
+version = "0.3.0"
 description = "Gesture actions library for Appium"
 readme = "README.md"
 requires-python = ">=3.9"
@@ -22,29 +22,26 @@ classifiers = [
 ]
 
 [dependency-groups]
-dev = ["pdoc>=15.0.0", "pytest>=8.3.3", "ruff>=0.7.3", "twine>=5.1.1"]
+dev = [
+    "build>=1.2.2.post1",
+    "pdoc>=15.0.0",
+    "pytest>=8.3.3",
+    "ruff>=0.8.2",
+    "twine>=5.1.1",
+]
 
 [tool.ruff.lint]
 select = ["E", "F", "UP", "B", "SIM", "I"]
 ignore = ["E501"]
 
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
 
-[tool.hatch.metadata]
-allow-direct-references = true
-
-[tool.hatch.build]
-include = [
-    "src/appium/**/*",
-]
-
-[tool.hatch.build.targets.sdist]
-packages = ["src/appium"]
-
-[tool.hatch.build.targets.wheel]
-packages = ["src/appium"]
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["interaction*"]
+exclude = ["tests", "tests.*"]
 
 [project.urls]
 homepage = "https://github.com/tanakrit-d/appium-gesture-actions"
