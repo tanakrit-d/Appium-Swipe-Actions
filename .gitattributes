@@ -5,3 +5,5 @@
 *.html -linguist-detectable
 *.css -linguist-detectable
 *.js -linguist-detectable
+docs -linguist-detectable
+site -linguist-detectable
