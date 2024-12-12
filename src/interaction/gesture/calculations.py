@@ -143,8 +143,7 @@ def retrieve_element_location(element: WebElement) -> tuple[int, int]:
     Retrieve the location of an element.
 
     Args:
-        locator_method: The method to locate the element (e.g., AppiumBy.XPATH).
-        locator_value: The value to use with the locator method.
+        element: The WebElement to retrieve the location for.
 
     Returns:
         A tuple containing the x and y coordinates of the element.

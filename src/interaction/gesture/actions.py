@@ -19,8 +19,7 @@ class GestureActions:
         Initialize the GestureActions object.
 
         Args:
-            driver: The Appium driver instance.
-            **kwargs: Optional keyword arguments for customising crop factors, element probe attempts, and probe timeout.
+            driver (WebDriver): The Appium driver instance.
         """
         self._driver = driver
         self._platform = platform
