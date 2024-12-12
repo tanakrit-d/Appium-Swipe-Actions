@@ -1,2 +1,7 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Linguist Overrides
+*.html -linguist-detectable
+*.css -linguist-detectable
+*.js -linguist-detectable
