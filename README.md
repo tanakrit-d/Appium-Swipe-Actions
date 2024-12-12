@@ -1,4 +1,9 @@
-# Appium Gestures Library
+<div align="center">
+  <img src="https://github.com/tanakrit-d/appium-gesture-actions/raw/main/docs/assets/logo.png" width="100">
+  <p><strong>Appium Gesture Library</strong></p>
+</div>
+
+## Overview
 
 This library is to provide a number gesture/interaction functions for Appium mobile automation.  
 The gestures are platform agnostic, which allows the user to provide a WebElement - or locators for both Android and iOS in the same function call.  
@@ -27,7 +32,7 @@ The gestures are platform agnostic, which allows the user to provide a WebElemen
 
 -----
 
-[Documentation](https://tanakrit-d.github.io/appium-gesture-actions/index.html)
+[API Documentation](https://tanakrit-d.github.io/appium-gesture-actions/index.html)
 
 -----
 
@@ -35,7 +40,7 @@ The gestures are platform agnostic, which allows the user to provide a WebElemen
 
 - [x] Android  
   Requires: `appium driver install uiautomator2`
-- [x] iOS (unverified)  
+- [ ] iOS (unverified)  
   Requires: `appium driver install xcuitest`
 
 ## Install
@@ -48,16 +53,12 @@ uv add interaction-gesture-actions
 
 ### Changelog
 
-```md
+```markdown
 ## 0.3.0 (2024-12-12) 🎄
 
 - Renamed package to resolve namespace collisions
   - This also resolved the workaround required when building docs
-
-    ```python
-    from interaction.gestures.actions import GestureActions
-    ```
-
+      `from interaction.gestures.actions import GestureActions`
 - Updated dependencies
 - Change build backend from `hatchling` to `build`
 - Migrating back from TypedDict allows for better Type Hinting/Intellisense

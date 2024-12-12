@@ -5,9 +5,9 @@
 - Renamed package to resolve namespace collisions
   - This also resolved the workaround required when building docs
 
-    ```python
-    from interaction.gestures.actions import GestureActions
-    ```
+      ```python
+      from interaction.gestures.actions import GestureActions
+      ```
 
 - Updated dependencies
 - Change build backend from `hatchling` to `build`
