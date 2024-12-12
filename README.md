@@ -5,7 +5,7 @@
 
 ## Overview
 
-The purpose of this library is to provide a number gesture/interaction functions for Appium mobile automation.  
+The purpose of this library is to provide a of number gesture/interaction functions for Appium mobile automation.  
 The gestures are platform agnostic, which allows the user to provide a WebElement - or locators for both Android and iOS in the same function call.  
 
 ## Available Functions
