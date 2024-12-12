@@ -109,7 +109,7 @@ action.swipe.element_into_view(
 )
 ```
 
-![Library Demo](https://github.com/tanakrit-d/appium-gesture-actions/raw/main/demo/example.gif)
+<img src="https://github.com/tanakrit-d/appium-gesture-actions/raw/main/demo/example.gif" alt="Library Demo Animation" width="300"/>
 
 ### Example Implementation
 
