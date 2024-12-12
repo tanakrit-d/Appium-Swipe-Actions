@@ -15,8 +15,8 @@ keywords = [
     "drag and drop",
 ]
 dependencies = [
-    "appium-python-client>=4.3.0",
-    "selenium>=4.26.1",
+    "appium-python-client>=4.4.0",
+    "selenium>=4.27.1",
 ]
 classifiers = [
     "Programming Language :: Python :: 3",
@@ -30,9 +30,9 @@ dev = [
     "mkdocs>=1.6.1",
     "mkdocs-material>=9.5.48",
     "mkdocstrings-python>=1.12.2",
-    "pytest>=8.3.3",
+    "pytest>=8.3.4",
     "ruff>=0.8.2",
-    "twine>=5.1.1",
+    "twine>=6.0.1",
 ]
 
 [tool.ruff.lint]
