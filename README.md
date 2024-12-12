@@ -49,7 +49,7 @@ uv add appium-gesture-actions
 ### Changelog
 
 ```md
-## 0.3.0 (2024-12-12) 🥳
+## 0.3.0 (2024-12-12) 🎄
 
 - Renamed package to resolve namespace collisions
   - This also resolved the workaround required when building docs
@@ -170,7 +170,7 @@ class TestDemo(TestCore):
 
 ## An Explainer on Swipe Element Into View
 
-This function (part of the [SwipeGestures](https://github.com/tanakrit-d/appium-gesture-actions/blob/ae1d229d14ced2a20169982d6284fcf7ed92c22b/src/appium/gesture/swipe.py#L45) class) has cross-platform support.  
+This function (part of the [SwipeGestures](https://github.com/tanakrit-d/appium-gesture-actions/blob/5fbda3fa02cc07474dfe532fe5ac0f43fb6928a7/src/interaction/gesture/swipe.py#L44) class) has cross-platform support.  
 It is achieved by using parameters with different suffixes (`_a` and `_i` for Android and iOS respectively).  
 
 This will allow you to use a single function call for use on both platforms.
@@ -191,7 +191,7 @@ Additionally, the `if actions_partial > SWIPE_ACTION_THRESHOLD` check ensures th
 When this value is less than 50px, the swipe action will be interpreted by the OS as a double-tap.
 
 Please look at `_fallback_scroll_to_element` if you would like to learn more.  
-https://github.com/tanakrit-d/appium-gesture-actions/blob/ae1d229d14ced2a20169982d6284fcf7ed92c22b/src/appium/gesture/swipe.py#L176
+<https://github.com/tanakrit-d/appium-gesture-actions/blob/5fbda3fa02cc07474dfe532fe5ac0f43fb6928a7/src/interaction/gesture/swipe.py#L172>
 
 ## Defining a Scrollable Region
 
@@ -241,7 +241,7 @@ Bottom-Mid-Point:  (40, 40)
 Bottom-Right-Point:  (60, 40)
 ```
 
-An example of this is available here: [demo/calc_coordinates.py](https://github.com/tanakrit-d/appium-gesture-actions/blob/dc16c82864212b68ee55c79540518810e5a4ee5a/demo/calc_coordinates.py)
+An example of this is available here: [demo/calc_coordinates.py](https://github.com/tanakrit-d/appium-gesture-actions/raw/main/demo/calc_coordinates.py)
 
 ## Notes
 
