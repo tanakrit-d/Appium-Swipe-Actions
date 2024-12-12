@@ -2,6 +2,9 @@
 * text=auto
 
 # Linguist Overrides
+*.html -linguist-detectable
+*.css -linguist-detectable
+*.js -linguist-detectable
 *.html linguist-vendored
 *.css linguist-vendored
 *.js linguist-vendored
