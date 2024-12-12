@@ -1,4 +1,9 @@
-# Appium Gestures Library
+<div align="center">
+  <img src="docs/assets/logo.png" width="100">
+  <p><strong>Appium Gesture Library</strong></p>
+</div>
+
+## Overview
 
 This library is to provide a number gesture/interaction functions for Appium mobile automation.  
 The gestures are platform agnostic, which allows the user to provide a WebElement - or locators for both Android and iOS in the same function call.  
