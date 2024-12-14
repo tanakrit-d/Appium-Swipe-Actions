@@ -1,5 +1,5 @@
 import logging
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from appium.webdriver.webdriver import WebDriver
 from appium.webdriver.webelement import WebElement
@@ -16,7 +16,7 @@ class DragAndDropParameters:
 
     element_source: WebElement
     element_target: WebElement
-    _speed: float = 1.0
+    _speed: float = field(default=1.0, repr=False)
 
     @property
     def speed(self) -> float:
@@ -29,6 +29,9 @@ class DragAndDropParameters:
             msg = f"Speed must be between 0.0 and 10.0, got {value}"
             raise ValueError(msg)
         self._speed = value
+
+    def __post_init__(self):
+        self.speed = self._speed
 
 
 class DragAndDropGestures:
@@ -58,6 +61,10 @@ class DragAndDropGestures:
                 Defaults to 1.0 (100%).
         """
         p = DragAndDropParameters(element_source, element_target, speed)
+
+        if element_source is element_target:
+            raise ValueError("Source and target elements must be different")
+
         try:
             init_element = calculate_element_points(p.element_source)
             init_x, init_y = init_element["mid"]
@@ -66,7 +73,7 @@ class DragAndDropGestures:
 
             return (
                 self._drag_drop_android(init_x, init_y, final_x, final_y, p.speed)
-                if self._platform == "Android"
+                if self._platform == "android"
                 else self._drag_drop_ios(init_x, init_y, final_x, final_y, p.speed)
             )
         except Exception as e:
