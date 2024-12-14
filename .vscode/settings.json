@@ -18,6 +18,7 @@
         "**/__pycache__": true
     },
     "cSpell.words": [
-        "color"
+        "color",
+        "parametrize"
     ]
 }

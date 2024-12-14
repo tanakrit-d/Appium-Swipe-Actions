@@ -3,7 +3,7 @@ name = "interaction.gesture.actions"
 version = "0.3.0"
 description = "Gesture actions library for Appium"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 keywords = [
     "appium",
     "actions",
@@ -30,6 +30,7 @@ dev = [
     "mkdocs>=1.6.1",
     "mkdocs-material>=9.5.48",
     "mkdocstrings-python>=1.12.2",
+    "pytest-mock>=3.14.0",
     "pytest>=8.3.4",
     "ruff>=0.8.2",
     "twine>=6.0.1",
