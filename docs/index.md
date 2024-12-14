@@ -53,5 +53,5 @@ uv add interaction-gesture-actions
 
 - ✅ Android  
   Requires: `appium driver install uiautomator2`
-- ✅ iOS (unverified)  
+- ❎ iOS (unverified)  
   Requires: `appium driver install xcuitest`
