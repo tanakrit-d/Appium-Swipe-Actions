@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.1 (2024-12-13) ☃️
+
+- Updated dependencies
+- `swipe.element_into_view()` now returns a WebElement
+- Added new tests
+
 ## 0.3.0 (2024-12-12) 🎄
 
 - Renamed package to resolve namespace collisions
@@ -9,7 +15,6 @@
       from interaction.gestures.actions import GestureActions
       ```
 
-- Updated dependencies
 - Change build backend from `hatchling` to `build`
 - Migrating back from TypedDict allows for better Type Hinting/Intellisense
 - Updated demo
