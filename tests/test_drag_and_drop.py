@@ -57,28 +57,22 @@ class TestDragAndDropGestures:
     ):
         """Test drag and drop method specifically for Android platform."""
         mock_execute_script = mocker.patch.object(mock_driver, "execute_script")
-        
+
         mock_source_element.location = {"x": 125, "y": 237}
         mock_source_element.size = {"width": 50, "height": 75}
         mock_target_element.location = {"x": 325, "y": 437}
         mock_target_element.size = {"width": 50, "height": 75}
-        
+
         drag_and_drop_gestures_android.drag_and_drop(
             mock_source_element, mock_target_element, speed=1.0
         )
-        
+
         dpi = 495
         velocity = (2500 * dpi) * 1.0
-        
+
         mock_execute_script.assert_called_once_with(
             "mobile: dragGesture",
-            {
-                "startX": 150,
-                "startY": 274,
-                "endX": 350,
-                "endY": 474,
-                "speed": velocity
-            }
+            {"startX": 150, "startY": 274, "endX": 350, "endY": 474, "speed": velocity},
         )
 
     def test_drag_and_drop_method_ios(
@@ -91,16 +85,16 @@ class TestDragAndDropGestures:
     ):
         """Test the drag_and_drop method."""
         mock_execute_script = mocker.patch.object(mock_driver, "execute_script")
-        
+
         mock_source_element.location = {"x": 125, "y": 237}
         mock_source_element.size = {"width": 50, "height": 75}
         mock_target_element.location = {"x": 325, "y": 437}
         mock_target_element.size = {"width": 50, "height": 75}
-        
+
         drag_and_drop_gestures_ios.drag_and_drop(
             mock_source_element, mock_target_element, speed=1.5
         )
-        
+
         mock_execute_script.assert_called_once_with(
             "mobile: dragFromToWithVelocity",
             {
@@ -110,8 +104,8 @@ class TestDragAndDropGestures:
                 "fromY": 274,
                 "toX": 350,
                 "toY": 474,
-                "velocity": 600.0
-            }
+                "velocity": 600.0,
+            },
         )
 
     def test_drag_and_drop_invalid_speed_android(
@@ -121,7 +115,9 @@ class TestDragAndDropGestures:
         speeds = [-1, 10.1, 15, 16.0]
 
         for speed in speeds:
-            with pytest.raises(ValueError, match=f"Speed must be between 0.0 and 10.0, got {speed}"):
+            with pytest.raises(
+                ValueError, match=f"Speed must be between 0.0 and 10.0, got {speed}"
+            ):
                 drag_and_drop_gestures_android.drag_and_drop(
                     mock_source_element, mock_target_element, speed=speed
                 )
@@ -133,7 +129,9 @@ class TestDragAndDropGestures:
         speeds = [-1, 10.1, 15, 16.0]
 
         for speed in speeds:
-            with pytest.raises(ValueError, match=f"Speed must be between 0.0 and 10.0, got {speed}"):
+            with pytest.raises(
+                ValueError, match=f"Speed must be between 0.0 and 10.0, got {speed}"
+            ):
                 drag_and_drop_gestures_ios.drag_and_drop(
                     mock_source_element, mock_target_element, speed=speed
                 )
