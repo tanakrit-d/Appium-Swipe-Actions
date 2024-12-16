@@ -54,7 +54,7 @@ class SwipeGestures:
 
         """
         self._driver = driver
-        self._platform = platform
+        self._platform = platform.lower()
         self._max_attempts = 5
         self._viewport = self._driver.get_window_size()
         self._viewport_width = self._viewport["width"]
