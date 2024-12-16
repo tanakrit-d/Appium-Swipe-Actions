@@ -54,15 +54,11 @@ uv add interaction-gesture-actions
 ### Changelog
 
 ```markdown
-## 0.3.0 (2024-12-12) 🎄
+## 0.3.1 (2024-12-13) ☃️
 
-- Renamed package to resolve namespace collisions
-  - This also resolved the workaround required when building docs
-      `from interaction.gestures.actions import GestureActions`
 - Updated dependencies
-- Change build backend from `hatchling` to `build`
-- Migrating back from TypedDict allows for better Type Hinting/Intellisense
-- Updated demo
+- `swipe.element_into_view()` now returns a WebElement
+- Added new tests
 ```
 
 See full list of changes: [CHANGES.md](https://github.com/tanakrit-d/appium-gesture-actions/raw/main/CHANGES.md)
@@ -74,12 +70,10 @@ See full list of changes: [CHANGES.md](https://github.com/tanakrit-d/appium-gest
 - [x] Robust error handling
 - [x] Add documentation
 - [x] Add examples for other gestures
-- [x] Return bool for most functions
-- [ ] Return WebElement on `element_into_view()`
-- [ ] Completely rewrite the tests
+- [x] Return WebElement for `swipe.element_into_view()`
+- [x] Reduce minimum Python version
+- [x] Completely rewrite the tests
 - [ ] Allow for the specifying of values in sub-classes (such as `_max_attempts` or `CROP_FACTOR_` in `SwipeGestures`)
-- [ ] Reduce minimum Python version
-- [ ] Remove direct accessing of `ActionBuilder` - or not..
 - [ ] Handling of different orientations
 - [ ] Allow for re-initialisation of viewport calculations
 
@@ -109,7 +103,7 @@ action.swipe.element_into_view(
 )
 ```
 
-![Library Demo](https://github.com/tanakrit-d/appium-gesture-actions/raw/main/demo/example.gif)
+<img src="https://github.com/tanakrit-d/appium-gesture-actions/raw/main/demo/example.gif" alt="Library Demo Animation" width="300"/>
 
 ### Example Implementation
 

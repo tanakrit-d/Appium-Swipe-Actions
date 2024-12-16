@@ -1,5 +1,5 @@
 import logging
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from appium.webdriver.webdriver import WebDriver
 from appium.webdriver.webelement import WebElement
@@ -14,8 +14,8 @@ class PinchParameters:
     """Encapsulates the parameters needed to perform pinch gestures."""
 
     element: WebElement
-    _percent: float = 0.75
-    speed: float = 1.0
+    _percent: float = field(default=0.75, repr=False)
+    _speed: float = field(default=1.0, repr=False)
 
     @property
     def percent(self) -> float:
@@ -28,6 +28,22 @@ class PinchParameters:
             msg = f"Percent must be between 0.0 and 1.0, got {value}"
             raise ValueError(msg)
         self._percent = value
+
+    @property
+    def speed(self) -> float:
+        """Get the velocity factor for the pinch gesture."""
+        return self._speed
+
+    @speed.setter
+    def speed(self, value: float) -> None:
+        if not 0.0 <= value <= 10.0:
+            msg = f"Speed must be between 0.0 and 10.0, got {value}"
+            raise ValueError(msg)
+        self._speed = value
+
+    def __post_init__(self):
+        self.percent = self._percent
+        self.speed = self._speed
 
 
 class PinchGestures:
@@ -72,7 +88,7 @@ class PinchGestures:
         try:
             return (
                 self._pinch_open_android(p.element, p.percent, p.speed)
-                if self._platform == "Android"
+                if self._platform == "android"
                 else self._pinch_open_ios(p.element, p.percent, p.speed)
             )
         except Exception as e:
@@ -122,6 +138,7 @@ class PinchGestures:
             percent (float, optional): The scale factor of the pinch as a percentage (0.0-1.0).
                 Higher values create a larger pinch pull.
                 On iOS a value > 1 inverts the pinch gesture, therefore the value is * 2.
+                Therefore the value must be greater than 0.51.
                 Defaults to 0.75.
             speed (float, optional): The velocity of the pinch gesture as a percentage.
                 For Android, this is multiplied by the device's DPI to calculate the final velocity.
@@ -140,7 +157,7 @@ class PinchGestures:
         try:
             return (
                 self._pinch_close_android(p.element, p.percent, p.speed)
-                if self._platform == "Android"
+                if self._platform == "android"
                 else self._pinch_close_ios(p.element, p.percent, p.speed)
             )
         except Exception as e:
@@ -163,11 +180,17 @@ class PinchGestures:
 
     def _pinch_close_ios(self, element: WebElement, percent: float, speed: float) -> bool:
         """Execute iOS-specific pinch gesture."""
+        if not (0.51 < percent <= 1.0):
+            msg = f"Percent must be > 0.51 and <= 1.0, got {percent}"
+            raise ValueError(msg)
+        
+        scale = percent * 2
+
         return self._driver.execute_script(
             "mobile: pinch",
             {
                 "elementId": element,
-                "scale": percent * 2,
+                "scale": scale,
                 "velocity": speed,
             },
         )

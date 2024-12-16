@@ -1,5 +1,4 @@
 import logging
-from typing import TypedDict
 
 from appium.webdriver.common.appiumby import AppiumBy
 from appium.webdriver.webdriver import WebDriver
@@ -11,7 +10,7 @@ from selenium.webdriver.common.actions.action_builder import ActionBuilder
 from selenium.webdriver.common.actions.pointer_input import PointerInput
 
 from .calculations import calculate_element_points
-from .enums import Direction, SeekDirection, UiSelector
+from .enums import Direction, SeekDirection
 
 logger = logging.getLogger(__name__)
 
@@ -54,7 +53,7 @@ class SwipeGestures:
 
         """
         self._driver = driver
-        self._platform = platform
+        self._platform = platform.lower()
         self._max_attempts = 5
         self._viewport = self._driver.get_window_size()
         self._viewport_width = self._viewport["width"]
@@ -100,7 +99,7 @@ class SwipeGestures:
         value_i: str | None = None,
         locator_method_i: AppiumBy = None,
         direction: SeekDirection = SeekDirection.DOWN,
-    ):
+    ) -> WebDriver | None:
         """
         Swipe to bring an element into view.
 
@@ -110,45 +109,47 @@ class SwipeGestures:
         The method if platform agnostic, this means you can include locators for both scenarios
         and the function will use the value of `self._platform` to determine which parameters to use.
 
-        Suffixes `_a` and `_i` are for Android and iOS respectively.
+        Suffixes `_a` and `_i` is for Android and iOS respectively.
 
         Args:
-            value_a (str): The locator value for the element to swipe to view (e.g., new UiSelector().description("Day planted")).
-            locator_method_a (AppiumBy): The method to locate the element (e.g., AppiumBy.ANDROID_UIAUTOMATOR).
-            value_i (str): The locator value for the element to swipe to view (e.g., label == 'Flowers').
-            locator_method_i (AppiumBy): The method to locate the element (e.g., AppiumBy.IOS_PREDICATE).
+            value_a (str | None): The locator value for the element to swipe to view (e.g., new UiSelector().description("Day planted")).
+            locator_method_a (AppiumBy | None): The method to locate the element (e.g., AppiumBy.ANDROID_UIAUTOMATOR).
+            value_i (str | None): The locator value for the element to swipe to view (e.g., label == 'Flowers').
+            locator_method_i (AppiumBy | None): The method to locate the element (e.g., AppiumBy.IOS_PREDICATE).
             direction (SeekDirection): The direction to scroll (e.g., SeekDirection.DOWN).
-
+    
+        Returns:
+            WebDriver | None: The located element if found; otherwise, None.
+    
         Raises:
             ValueError: If the specified platform is unknown or unspecified.
 
-        Android: Supports all locator methods, however UiSelector is highly preferred.
+        Android: Supports all locator methods, however UiSelector is highly preferred.  
         iOS: Supports all locator methods, however NSPredicate is highly preferred.
 
         """
-        if self._platform == "Android":
-            self._scroll_to_android(value_a, locator_method_a, direction)
+        if self._platform == "android":
+            return self._scroll_to_android(value_a, locator_method_a, direction)
 
-        elif self._platform == "iOS":
-            self._scroll_to_ios(value_i, locator_method_i, direction)
+        elif self._platform == "ios":
+            return self._scroll_to_ios(value_i, locator_method_i, direction)
 
         else:
             msg = "Unspecified or unknown platform."
             raise ValueError(msg)
 
-    def _scroll_to_android(self, value: str, locator_method: AppiumBy, direction: SeekDirection = None) -> bool | None:
+    def _scroll_to_android(self, value: str, locator_method: AppiumBy, direction: SeekDirection = None) -> WebDriver | None:
         if locator_method == AppiumBy.ANDROID_UIAUTOMATOR:
             # ui_selector = kwargs.get("ui_selector").value
             query = f"new UiScrollable(new UiSelector().scrollable(true)).scrollIntoView({value})"
-            self._driver.find_element(AppiumBy.ANDROID_UIAUTOMATOR, query)
-            return True
+            return self._driver.find_element(AppiumBy.ANDROID_UIAUTOMATOR, query)
         msg = "Locator was not of type AppiumBy.ANDROID_UIAUTOMATOR or failed to locate element within viewport,"
         "falling back to alternative method."
         logger.info(msg)
         self._fallback_scroll_to_element(value, locator_method, direction)
         return None
 
-    def _scroll_to_ios(self, value: str, locator_method: AppiumBy, direction: SeekDirection) -> bool | None:
+    def _scroll_to_ios(self, value: str, locator_method: AppiumBy, direction: SeekDirection) -> WebDriver | None:
         try:
             element = self._driver.find_element(locator_method, value)
             self._driver.execute_script(
@@ -163,13 +164,13 @@ class SwipeGestures:
             self._fallback_scroll_to_element(value, locator_method, direction)
             return None
         else:
-            return True
+            return element
 
     # def _query_builder_uiautomator(self, value: str, locator_method) -> str:
     #     ui_selector = kwargs.get("ui_selector")
     #     return f'(new UiSelector().{ui_selector}("{value}"))'
 
-    def _fallback_scroll_to_element(self, value: str, locator_method: AppiumBy, direction: SeekDirection = None) -> bool:
+    def _fallback_scroll_to_element(self, value: str, locator_method: AppiumBy, direction: SeekDirection = None) -> WebDriver | None:
         action = self._create_action()
         for _ in range(self._max_attempts):
             try:
@@ -178,14 +179,14 @@ class SwipeGestures:
 
                 if direction in [SeekDirection.UP, SeekDirection.DOWN]:
                     self._swipe_element_into_view_vertical(action, element_y, direction)
-                    return True
+                    return element
                 elif direction in [SeekDirection.LEFT, SeekDirection.RIGHT]:  # noqa: RET505
                     self._swipe_element_into_view_horizontal(
                         action,
                         element_x,
                         direction,
                     )
-                    return True
+                    return element
             except NoSuchElementException:
                 swipe_actions = {
                     SeekDirection.UP: lambda: self._perform_navigation_partial_y(
@@ -215,7 +216,7 @@ class SwipeGestures:
                 }
                 swipe_actions[direction]()
 
-        return False
+        return None
 
     def up(self) -> None:
         """Perform a full upward swipe of the calculated viewport."""

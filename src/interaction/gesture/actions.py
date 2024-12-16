@@ -20,12 +20,33 @@ class GestureActions:
 
         Args:
             driver (WebDriver): The Appium driver instance.
+            platform (str): The platform for which gestures are defined (e.g., 'android' or 'ios').
+
         """
-        self._driver = driver
-        self._platform = platform
+        self._driver = self._validate_driver(driver)
+        self._platform = self._validate_platform(platform)
         self._drag_drop: DragAndDropGestures | None = None
         self._pinch: PinchGestures | None = None
         self._swipe: SwipeGestures | None = None
+    
+    def _validate_driver(self, driver: WebDriver) -> WebDriver:
+        """Validate the driver instance."""
+        if not isinstance(driver, WebDriver):
+            raise TypeError(f"Invalid driver type: '{type(driver).__name__}'. Platform must be of type 'WebDriver'.")
+        
+        return driver
+    
+    def _validate_platform(self, platform: str) -> str:
+        """Validate and normalize the platform string."""
+        if not isinstance(platform, str):
+            raise ValueError(f"Invalid platform type: '{type(platform).__name__}'. Platform must be of type 'str'.")
+
+        platform = platform.lower()
+
+        if platform not in ['android', 'ios']:
+            raise ValueError(f"Invalid platform: '{platform}'. Platform must be either 'ios' or 'android'.")
+        
+        return platform
 
     @property
     def drag_drop(self) -> "DragAndDropGestures":
