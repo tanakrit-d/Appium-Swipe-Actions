@@ -54,7 +54,7 @@ uv add interaction-gesture-actions
 ### Changelog
 
 ```markdown
-## 0.3.1 (2024-12-13) ☃️
+## [Upcoming] 0.3.1 (2024-12-XX) ☃️
 
 - Updated dependencies
 - `swipe.element_into_view()` now returns a WebElement
