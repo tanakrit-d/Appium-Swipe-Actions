@@ -1,5 +1,4 @@
 import logging
-from typing import TypedDict
 
 from appium.webdriver.common.appiumby import AppiumBy
 from appium.webdriver.webdriver import WebDriver
@@ -11,7 +10,7 @@ from selenium.webdriver.common.actions.action_builder import ActionBuilder
 from selenium.webdriver.common.actions.pointer_input import PointerInput
 
 from .calculations import calculate_element_points
-from .enums import Direction, SeekDirection, UiSelector
+from .enums import Direction, SeekDirection
 
 logger = logging.getLogger(__name__)
 
